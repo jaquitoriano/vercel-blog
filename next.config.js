@@ -11,12 +11,14 @@ const nextConfig = {
       },
     ],
   },
+  // We'll keep error checking for production
   typescript: {
-    // !! WARN !!
-    // This is a temporary setting for development
-    // Remove this when deploying to production
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: process.env.NODE_ENV === 'development',
   },
+  // Optimize for production
+  swcMinify: true,
+  poweredByHeader: false,
+  compress: true,
 };
 
 module.exports = nextConfig;
