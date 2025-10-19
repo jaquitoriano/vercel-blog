@@ -1,103 +1,215 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { Button } from '@/components/Button';
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
+import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/data';
+import { formatDate } from '@/lib/utils';
+import ImageHandler from '@/components/ImageHandler';
+
+// Get data from our mock database
+const featuredPosts = getFeaturedPostsWithRelations();
+const featuredPost = featuredPosts[0]; // Get the first featured post
+const recentPosts = getRecentPostsWithRelations(3);
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="content-wide">
+      {/* Hero Section */}
+      <section className="mb-16">
+        <div className="rounded-lg bg-background-soft p-8 md:p-12 border border-border">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+              <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
+                Welcome to Our Blog
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8">
+              Explore the latest in web development, design, and technology with our
+              in-depth articles and tutorials.
+            </p>
+            <Button size="lg" asChild>
+              <Link href="/posts">
+                Explore All Posts
+              </Link>
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Featured Post */}
+      <section className="mb-16">
+        <h2 className="text-2xl md:text-3xl font-serif font-bold mb-6">
+          Featured Post
+        </h2>
+        {featuredPost ? (
+          <Card hover>
+            {featuredPost.coverImage && (
+              <div className="w-full h-64 bg-muted overflow-hidden">
+                <ImageHandler 
+                  src={featuredPost.coverImage} 
+                  alt={featuredPost.title}
+                  className="w-full h-full object-cover"
+                  isAvatar={false}
+                  name={featuredPost.title}
+                />
+              </div>
+            )}
+            <CardHeader>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {featuredPost.tags.map(tag => (
+                  <span key={tag.id} className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+              <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                {formatDate(featuredPost.date)}
+                <span className="inline-block mx-1">•</span>
+                <span className="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-eye">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  {featuredPost.views}
+                </span>
+              </div>
+              <CardTitle>
+                <Link href={`/posts/${featuredPost.slug}`} className="hover:text-primary transition-colors">
+                  {featuredPost.title}
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <ImageHandler 
+                    src={featuredPost.author.avatar} 
+                    alt={featuredPost.author.name}
+                    className="w-full h-full object-cover"
+                    isAvatar={true}
+                    name={featuredPost.author.name}
+                  />
+                </div>
+                <span className="font-medium">{featuredPost.author.name}</span>
+              </div>
+              <CardDescription className="mb-4">
+                {featuredPost.excerpt}
+              </CardDescription>
+            </CardContent>
+            <CardFooter>
+              <Button variant="link" asChild>
+                <Link href={`/posts/${featuredPost.slug}`}>
+                  Continue Reading →
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        ) : (
+          <p className="text-muted-foreground">No featured posts available.</p>
+        )}
+      </section>
+
+      {/* Recent Posts */}
+      <section className="mb-16">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold">
+            Recent Posts
+          </h2>
+          <Link
+            href="/posts"
+            className="text-primary hover:text-primary-hover font-medium"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {recentPosts.map((post) => (
+            <Card key={post.id} hover className="flex flex-col">
+              {post.coverImage && (
+                <div className="w-full h-40 bg-muted overflow-hidden">
+                  <ImageHandler 
+                    src={post.coverImage} 
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                    isAvatar={false}
+                    name={post.title}
+                  />
+                </div>
+              )}
+              <CardHeader>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {post.tags.slice(0, 2).map(tag => (
+                    <span key={tag.id} className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                      {tag.name}
+                    </span>
+                  ))}
+                  {post.tags.length > 2 && (
+                    <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
+                      +{post.tags.length - 2}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  {formatDate(post.date)}
+                </div>
+                <CardTitle>
+                  <Link href={`/posts/${post.slug}`} className="hover:text-primary transition-colors line-clamp-2">
+                    {post.title}
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <div className="flex items-center gap-2 mb-2 text-sm">
+                  <div className="w-6 h-6 rounded-full overflow-hidden">
+                    <ImageHandler 
+                      src={post.author.avatar} 
+                      alt={post.author.name}
+                      className="w-full h-full object-cover"
+                      isAvatar={true}
+                      name={post.author.name}
+                    />
+                  </div>
+                  <span>{post.author.name}</span>
+                </div>
+                <CardDescription className="line-clamp-3">
+                  {post.excerpt}
+                </CardDescription>
+              </CardContent>
+              <CardFooter>
+                <Button variant="link" asChild>
+                  <Link href={`/posts/${post.slug}`}>
+                    Read More →
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Newsletter Subscription */}
+      <section className="mb-16">
+        <Card className="bg-muted p-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
+              Subscribe to our newsletter
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Get notified when we publish new articles. We won't spam you or share your details.
+            </p>
+            <form className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="rounded-md border border-border bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary flex-grow px-4 py-2"
+                required
+              />
+              <Button type="submit" size="lg">
+                Subscribe
+              </Button>
+            </form>
+          </div>
+        </Card>
+      </section>
     </div>
   );
 }

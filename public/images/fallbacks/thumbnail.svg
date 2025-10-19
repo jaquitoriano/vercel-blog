@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="thumbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a0a" />
+      <stop offset="100%" stop-color="#151515" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#thumbGradient)" />
+  <rect x="20" y="20" width="760" height="410" stroke="#ff5fa2" stroke-width="2" fill="none" opacity="0.3" />
+  <text 
+    x="400" 
+    y="225" 
+    font-size="80" 
+    font-family="Arial, sans-serif" 
+    font-weight="bold"
+    fill="#ff5fa2" 
+    text-anchor="middle" 
+    dominant-baseline="central"
+  >
+    BLOG
+  </text>
+  <rect x="300" y="350" width="200" height="3" fill="#ff5fa2" opacity="0.9" />
+</svg>
