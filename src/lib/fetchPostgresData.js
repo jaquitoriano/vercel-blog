@@ -137,10 +137,24 @@ export async function getFeaturedPosts() {
       where: { id: post.categoryId }
     });
     
+    // Get tags for each post
+    const postTags = await prisma.postTag.findMany({
+      where: { postId: post.id }
+    });
+    
+    const tags = await Promise.all(
+      postTags.map(async (pt) => {
+        return prisma.tag.findUnique({
+          where: { id: pt.tagId }
+        });
+      })
+    );
+    
     return {
       ...post,
       author,
-      category
+      category,
+      tags: tags.filter(Boolean)
     };
   }));
   
@@ -197,10 +211,24 @@ export async function getPostsByCategory(categorySlug) {
       where: { id: post.authorId }
     });
     
+    // Get tags for each post
+    const postTags = await prisma.postTag.findMany({
+      where: { postId: post.id }
+    });
+    
+    const tags = await Promise.all(
+      postTags.map(async (pt) => {
+        return prisma.tag.findUnique({
+          where: { id: pt.tagId }
+        });
+      })
+    );
+    
     return {
       ...post,
       author,
-      category
+      category,
+      tags: tags.filter(Boolean)
     };
   }));
   
@@ -242,11 +270,24 @@ export async function getPostsByTag(tagSlug) {
       where: { id: post.categoryId }
     });
     
+    // Get all tags for the post, not just the current tag
+    const postTags = await prisma.postTag.findMany({
+      where: { postId: post.id }
+    });
+    
+    const tags = await Promise.all(
+      postTags.map(async (pt) => {
+        return prisma.tag.findUnique({
+          where: { id: pt.tagId }
+        });
+      })
+    );
+    
     return {
       ...post,
       author,
       category,
-      tags: [tag]
+      tags: tags.filter(Boolean)
     };
   }));
   
@@ -274,10 +315,24 @@ export async function getPostsByAuthor(authorId) {
       where: { id: post.categoryId }
     });
     
+    // Get tags for each post
+    const postTags = await prisma.postTag.findMany({
+      where: { postId: post.id }
+    });
+    
+    const tags = await Promise.all(
+      postTags.map(async (pt) => {
+        return prisma.tag.findUnique({
+          where: { id: pt.tagId }
+        });
+      })
+    );
+    
     return {
       ...post,
       author,
-      category
+      category,
+      tags: tags.filter(Boolean)
     };
   }));
   
@@ -327,10 +382,24 @@ export async function searchPosts(searchTerm) {
       where: { id: post.categoryId }
     });
     
+    // Get tags for each post
+    const postTags = await prisma.postTag.findMany({
+      where: { postId: post.id }
+    });
+    
+    const tags = await Promise.all(
+      postTags.map(async (pt) => {
+        return prisma.tag.findUnique({
+          where: { id: pt.tagId }
+        });
+      })
+    );
+    
     return {
       ...post,
       author,
-      category
+      category,
+      tags: tags.filter(Boolean)
     };
   }));
   

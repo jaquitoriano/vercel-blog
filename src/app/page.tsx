@@ -77,7 +77,7 @@ export default async function Home() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full overflow-hidden">
+                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                   <ImageHandler 
                     src={featuredPost.author.avatar} 
                     alt={featuredPost.author.name}
@@ -154,7 +154,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="flex-grow">
                 <div className="flex items-center gap-2 mb-2 text-sm">
-                  <div className="w-6 h-6 rounded-full overflow-hidden">
+                  <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                     <ImageHandler 
                       src={post.author.avatar} 
                       alt={post.author.name}

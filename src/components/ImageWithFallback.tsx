@@ -178,9 +178,10 @@ export function ImageWithFallback({
     <img
       src={imgSrc}
       alt={safeAlt}
-      className={`${className} ${type === 'avatar' ? 'avatar-image' : 'thumbnail-image'}`}
+      className={`${className} ${type === 'avatar' ? 'object-cover w-full h-full' : 'thumbnail-image'}`}
       onError={imgSrc.includes('/fallbacks/') ? undefined : handleImageError}
       loading="lazy"
+      style={type === 'avatar' ? { objectFit: 'cover', aspectRatio: '1' } : undefined}
     />
   );
 }

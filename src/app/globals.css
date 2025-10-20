@@ -353,6 +353,11 @@ html {
 
 /* Custom utility classes */
 @layer components {
+  /* Avatar image styling */
+  .avatar-image {
+    @apply object-cover w-full h-full;
+    aspect-ratio: 1;
+  }
   .prose-content {
     margin-left: auto;
     margin-right: auto;
