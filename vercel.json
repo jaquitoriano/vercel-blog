@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run vercel-build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "outputDirectory": ".next",
@@ -34,5 +34,13 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "NODE_OPTIONS": "--verbose"
+  },
+  "functions": {
+    "api/debug-env/route.js": {
+      "memory": 128
+    }
+  }
 }
