@@ -23,6 +23,7 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Important: Include cookies with the request
       });
       
       const data = await response.json();
@@ -31,11 +32,26 @@ export default function LoginPage() {
       if (response.ok && data.success) {
         // The cookie is set by the API
         console.log('Login successful, redirecting to dashboard...');
+        
+        // Check auth state before redirecting
+        const authCheckResponse = await fetch('/api/admin/auth-debug', { 
+          credentials: 'include' 
+        });
+        const authData = await authCheckResponse.json();
+        console.log('Auth debug info:', authData);
+        
         try {
+          // Try client-side navigation first
           await router.push('/admin/dashboard');
-          // If we're still here, navigation didn't occur
-          console.log('Navigation to dashboard may have failed, trying window.location');
-          window.location.href = '/admin/dashboard';
+          
+          // Wait a short time to see if navigation occurred
+          setTimeout(() => {
+            // If we're still on the login page, try fallback
+            if (window.location.pathname === '/admin/login') {
+              console.log('Navigation to dashboard may have failed, trying window.location');
+              window.location.href = '/admin/dashboard';
+            }
+          }, 300);
         } catch (navError) {
           console.error('Navigation error:', navError);
           // Fallback if router.push fails

@@ -5,6 +5,7 @@ import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import ImageHandler from '@/components/ImageHandler';
+import { NewsletterForm } from '@/components/NewsletterForm';
 
 // For rendering markdown content
 import ReactMarkdown from 'react-markdown';
@@ -186,10 +187,10 @@ export default async function Post({ params }: { params: { slug: string } }) {
       
       {/* Author Bio */}
       <div className="mb-16">
-        <Card className="bg-muted border-none">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-6">
-              <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
+        <Card className="bg-muted border-none shadow-md">
+          <CardContent className="p-4 sm:p-6 md:p-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center md:items-start gap-4 sm:gap-6">
+              <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 mx-auto sm:mx-0 border-2 border-primary/20">
                 <ImageHandler 
                   src={post.author.avatar}
                   alt={post.author.name}
@@ -198,16 +199,16 @@ export default async function Post({ params }: { params: { slug: string } }) {
                   name={post.author.name}
                 />
               </div>
-              <div>
+              <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-xl font-bold mb-2">{post.author.name}</h3>
                 <p className="text-muted-foreground mb-4">{post.author.bio}</p>
-                <div className="flex gap-3">
+                <div className="flex gap-4 justify-center sm:justify-start">
                   {post.author.social?.twitter && (
                     <a 
                       href={post.author.social.twitter} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
@@ -219,7 +220,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                       href={post.author.social.github} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
@@ -231,7 +232,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                       href={post.author.social.linkedin} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
@@ -245,7 +246,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                       href={post.author.social.website} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" />
@@ -306,8 +307,8 @@ export default async function Post({ params }: { params: { slug: string } }) {
           </h2>
           <div className="space-y-6">
             {comments.filter(c => c.approved).map((comment) => (
-              <Card key={comment.id} className="bg-card">
-                <CardContent className="p-6">
+              <Card key={comment.id} className="bg-card border-primary/10 hover:border-primary/30 transition-all">
+                <CardContent className="p-5 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h4 className="font-bold">{comment.name}</h4>
@@ -316,7 +317,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm">{comment.content}</p>
+                  <p className="text-sm leading-relaxed">{comment.content}</p>
                 </CardContent>
               </Card>
             ))}
@@ -324,54 +325,60 @@ export default async function Post({ params }: { params: { slug: string } }) {
           
           <div className="mt-8">
             <h3 className="text-xl font-bold mb-4">Leave a Comment</h3>
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-1">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="comment" className="block text-sm font-medium mb-1">
-                  Comment
-                </label>
-                <textarea
-                  id="comment"
-                  rows={4}
-                  className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  required
-                />
-              </div>
-              <Button type="submit">
-                Submit Comment
-              </Button>
-            </form>
+            <Card className="bg-muted/30 p-1">
+              <CardContent className="p-5">
+                <form className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium mb-2">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="comment" className="block text-sm font-medium mb-2">
+                      Comment
+                    </label>
+                    <textarea
+                      id="comment"
+                      rows={4}
+                      className="w-full px-4 py-2 rounded-md border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      required
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <Button type="submit" size="lg">
+                      Submit Comment
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </section>
       )}
       
       {/* Newsletter */}
       <section className="mb-16">
-        <Card className="bg-primary text-primary-foreground border-none">
-          <CardContent className="p-8">
+        <Card className="bg-gradient-to-br from-black to-secondary text-primary-foreground border-t-4 border-t-primary border-r-0 border-l-0 border-b-0 overflow-hidden shadow-lg">
+          <CardContent className="p-6 sm:p-8">
             <div className="max-w-xl mx-auto text-center">
               <h2 className="text-2xl md:text-3xl font-serif font-bold mb-3">
                 Enjoyed this article?
@@ -379,20 +386,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
               <p className="mb-6 opacity-90">
                 Subscribe to our newsletter to get notified when we publish new content. No spam, ever.
               </p>
-              <form className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="flex-grow px-4 py-2 rounded-md text-foreground bg-background border border-border focus:outline-none focus:ring-2 focus:ring-white/50"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  className="bg-white text-primary hover:bg-white/90"
-                >
-                  Subscribe
-                </Button>
-              </form>
+              <NewsletterForm />
             </div>
           </CardContent>
         </Card>

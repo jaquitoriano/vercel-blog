@@ -18,7 +18,12 @@ export async function middleware(request: NextRequest) {
     isLoginPath,
     hasAuthCookie: !!authCookie,
     authCookieValue: authCookie ? `${authCookie.value.substring(0, 3)}...` : 'none',
-    isLoggedIn
+    cookieName: authCookie?.name,
+    isLoggedIn,
+    allCookies: request.cookies.getAll().map(c => c.name),
+    host: request.headers.get('host'),
+    origin: request.headers.get('origin'),
+    referer: request.headers.get('referer')
   });
   
   // Add security headers for admin paths
