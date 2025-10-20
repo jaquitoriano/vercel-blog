@@ -1,32 +1,86 @@
 #!/usr/bin/env node
 
 console.log('🔍 Running pre-build environment check...');
+console.log('Build platform:', process.env.VERCEL ? 'Vercel' : 'Local/Other');
 
-// Define required environment variables
-const requiredVars = [
-  'POSTGRES_URL',
-  'POSTGRES_PRISMA_URL',
-  'POSTGRES_URL_NON_POOLING',
-  'POSTGRES_USER',
-  'POSTGRES_PASSWORD',
-  'POSTGRES_DATABASE',
-  'BLOB_READ_WRITE_TOKEN',
-  'NEXT_PUBLIC_STORE_ID',
-];
+// Define required environment variables with more flexible validation
+const requiredVars = {
+  // Database connection - we need at least one of these
+  database: {
+    required: ['POSTGRES_URL', 'POSTGRES_PRISMA_URL', 'DATABASE_URL'],
+    minRequired: 1, // Need at least one of these
+    message: 'At least one database connection string must be provided'
+  },
+  // Blob storage
+  blob: {
+    required: ['BLOB_READ_WRITE_TOKEN', 'NEXT_PUBLIC_STORE_ID'],
+    minRequired: 2, // Need both of these for blob storage to work
+    message: 'Blob storage configuration is incomplete'
+  }
+};
 
-// Check for missing variables
-const missing = requiredVars.filter(varName => !process.env[varName]);
+// Check which variables are present
+const status = {};
+let hasErrors = false;
+
+// Check each group
+Object.entries(requiredVars).forEach(([groupName, group]) => {
+  const presentVars = group.required.filter(varName => !!process.env[varName]);
+  const missingVars = group.required.filter(varName => !process.env[varName]);
+  
+  status[groupName] = {
+    required: group.required.length,
+    present: presentVars.length,
+    missing: missingVars,
+    hasMinimum: presentVars.length >= group.minRequired,
+  };
+  
+  if (!status[groupName].hasMinimum) {
+    hasErrors = true;
+  }
+});
 
 // Report results
-if (missing.length === 0) {
-  console.log('✅ All required environment variables are set!');
-  console.log('Database URL starts with:', process.env.POSTGRES_URL?.substring(0, 15) + '...');
-  console.log('BLOB token prefix:', process.env.BLOB_READ_WRITE_TOKEN?.substring(0, 10) + '...');
-  console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL || 'Not set (optional)');
-  process.exit(0); // Success
-} else {
-  console.error('❌ Missing required environment variables:');
-  missing.forEach(varName => console.error(`   - ${varName}`));
-  console.error('\nPlease set these variables in your Vercel project settings.');
+console.log('\n=== Environment Check Results ===\n');
+
+Object.entries(status).forEach(([groupName, group]) => {
+  if (group.hasMinimum) {
+    console.log(`✅ ${groupName}: ${group.present}/${group.required} variables set (minimum ${requiredVars[groupName].minRequired} required)`);
+    if (group.missing.length > 0) {
+      console.log(`   Optional missing: ${group.missing.join(', ')}`);
+    }
+  } else {
+    console.error(`❌ ${groupName}: ${group.present}/${group.required} variables set (minimum ${requiredVars[groupName].minRequired} required)`);
+    console.error(`   Missing: ${group.missing.join(', ')}`);
+    console.error(`   Error: ${requiredVars[groupName].message}`);
+  }
+});
+
+// Print diagnostic info for database connections
+if (process.env.POSTGRES_URL) {
+  const url = new URL(process.env.POSTGRES_URL);
+  console.log('\nDatabase diagnostics:');
+  console.log(`- Host: ${url.hostname}`);
+  console.log(`- Protocol: ${url.protocol}`);
+  console.log(`- Has password: ${!!url.password}`);
+  console.log(`- Has username: ${!!url.username}`);
+  console.log(`- Has pathname: ${!!url.pathname && url.pathname !== '/'}`);
+  console.log(`- Has search params: ${!!url.search && url.search !== '?'}`);
+}
+
+// Print Next.js site URL info
+console.log('\nSite URL configuration:');
+console.log(`- NEXT_PUBLIC_SITE_URL: ${process.env.NEXT_PUBLIC_SITE_URL || 'Not set (using default)'}`);
+
+// Print Node environment
+console.log('\nNode environment:');
+console.log(`- NODE_ENV: ${process.env.NODE_ENV || 'Not set'}`);
+console.log(`- NODE_VERSION: ${process.version}`);
+
+if (hasErrors) {
+  console.error('\n❌ Pre-build check failed! Please fix the errors above.');
   process.exit(1); // Failure - will stop the build
+} else {
+  console.log('\n✅ All required environment variables are set! Build can proceed.');
+  process.exit(0); // Success
 }

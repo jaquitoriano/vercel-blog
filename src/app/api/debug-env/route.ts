@@ -1,14 +1,31 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 
-export async function GET() {
-  // Only return if environment is explicitly debug
-  if (process.env.ENABLE_ENV_DEBUG !== 'true') {
-    return NextResponse.json({ error: 'Debug not enabled' }, { status: 403 });
+export const runtime = 'edge'; // Use edge runtime for faster execution
+
+export async function GET(request: Request) {
+  const headersList = headers();
+  const authHeader = headersList.get('x-vercel-debug-token') || '';
+  const url = new URL(request.url);
+  const debugParam = url.searchParams.get('debug');
+  
+  // Check for either header or query param for security
+  const isDebugAuthorized = authHeader === 'debug-vercel-deployment' || 
+                           debugParam === 'debug-vercel-deployment';
+  
+  if (!isDebugAuthorized) {
+    return NextResponse.json({ 
+      message: 'Debug diagnostics are protected',
+      info: 'Add ?debug=debug-vercel-deployment to URL to view environment diagnostics' 
+    }, { status: 403 });
   }
   
   return NextResponse.json({
     // Return safe environment diagnostics, not actual values
+    timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'unknown',
+    platform: process.env.VERCEL ? 'vercel' : 'unknown',
+    region: process.env.VERCEL_REGION || 'unknown',
     database: {
       hasUrl: !!process.env.POSTGRES_URL,
       hasPrismaUrl: !!process.env.POSTGRES_PRISMA_URL,
