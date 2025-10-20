@@ -1,7 +1,7 @@
 /**
- * Format a date string
+ * Format a date string or Date object
  */
-export function formatDate(date: string): string {
+export function formatDate(date: string | Date): string {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -12,7 +12,7 @@ export function formatDate(date: string): string {
 /**
  * Format a date with time
  */
-export function formatDateTime(date: string): string {
+export function formatDateTime(date: string | Date): string {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

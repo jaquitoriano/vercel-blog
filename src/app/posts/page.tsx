@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getAllPostsWithRelations } from '@/data';
+import { getAllPostsWithRelations } from '@/lib/postgresData';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
@@ -10,8 +10,8 @@ export const metadata = {
   description: 'Browse all our blog posts and articles',
 };
 
-export default function Posts() {
-  const allPosts = getAllPostsWithRelations();
+export default async function Posts() {
+  const allPosts = await getAllPostsWithRelations();
   
   return (
     <div className="content-wide">

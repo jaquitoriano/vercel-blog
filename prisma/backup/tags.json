@@ -1,0 +1,27 @@
+[
+  {
+    "id": "tag-1",
+    "name": "JavaScript",
+    "slug": "javascript"
+  },
+  {
+    "id": "tag-2",
+    "name": "React",
+    "slug": "react"
+  },
+  {
+    "id": "tag-3",
+    "name": "Next.js",
+    "slug": "nextjs"
+  },
+  {
+    "id": "tag-4",
+    "name": "TypeScript",
+    "slug": "typescript"
+  },
+  {
+    "id": "tag-5",
+    "name": "CSS",
+    "slug": "css"
+  }
+]

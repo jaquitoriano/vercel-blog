@@ -1,0 +1,22 @@
+[
+  {
+    "id": "author-1",
+    "name": "John Doe",
+    "avatar": "/images/authors/john-doe.jpg",
+    "bio": "Senior tech writer with over 10 years of experience in the industry.",
+    "social": {
+      "twitter": "johndoe",
+      "linkedin": "johndoe"
+    }
+  },
+  {
+    "id": "author-2",
+    "name": "Jane Smith",
+    "avatar": "/images/authors/jane-smith.jpg",
+    "bio": "Editor and tech enthusiast passionate about emerging technologies.",
+    "social": {
+      "twitter": "janesmith",
+      "linkedin": "janesmith"
+    }
+  }
+]

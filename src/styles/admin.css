@@ -1,0 +1,283 @@
+/* Admin styles to override the dark theme for admin pages */
+
+/* CSS Variables Override for Admin Panel */
+.admin-panel {
+  /* Base colors */
+  --background: #ffffff;
+  --foreground: #111827;
+  --background-soft: #f9fafb;
+  
+  /* Primary colors */
+  --primary: #f472b6; /* pink-400 */
+  --primary-hover: #ec4899; /* pink-500 */
+  --primary-foreground: #ffffff;
+  
+  /* Secondary colors */
+  --secondary: #f3f4f6; /* gray-100 */
+  --secondary-hover: #e5e7eb; /* gray-200 */
+  --secondary-foreground: #374151; /* gray-700 */
+  
+  /* Accent colors */
+  --accent: #eff6ff; /* blue-50 */
+  --accent-hover: #dbeafe; /* blue-100 */
+  --accent-foreground: #2563eb; /* blue-600 */
+  
+  /* Muted colors */
+  --muted: #f3f4f6; /* gray-100 */
+  --muted-foreground: #6b7280; /* gray-500 */
+  
+  /* Utility colors */
+  --border: #e5e7eb; /* gray-200 */
+  --border-hover: #d1d5db; /* gray-300 */
+  --input: #ffffff;
+  --ring: #f472b6; /* pink-400 */
+  --focus: rgba(244, 114, 182, 0.3); /* pink-400 with opacity */
+  
+  /* Status colors */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #ef4444; /* red-500 */
+  --info: #3b82f6; /* blue-500 */
+  
+  /* Card colors */
+  --card: #ffffff;
+  --card-foreground: #111827; /* gray-900 */
+  --card-border: #e5e7eb; /* gray-200 */
+}
+
+/* Form elements */
+.admin-panel input[type="text"],
+.admin-panel input[type="password"],
+.admin-panel input[type="email"],
+.admin-panel input[type="number"],
+.admin-panel input[type="search"],
+.admin-panel input[type="tel"],
+.admin-panel input[type="url"],
+.admin-panel input[type="date"],
+.admin-panel input[type="time"],
+.admin-panel input[type="datetime-local"],
+.admin-panel textarea,
+.admin-panel select {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Background colors */
+.admin-panel .bg-white,
+.admin-panel .bg-gray-50,
+.admin-panel .bg-gray-100 {
+  background-color: #ffffff !important;
+}
+
+.admin-panel main {
+  background-color: #f9fafb !important;
+}
+
+.admin-panel .bg-zinc-100 {
+  background-color: #f4f4f5 !important;
+}
+
+.admin-panel .bg-background {
+  background-color: #ffffff !important;
+}
+
+.admin-panel .bg-background-soft {
+  background-color: #f9fafb !important;
+}
+
+.admin-panel .bg-primary {
+  background-color: #f472b6 !important; /* pink-400 */
+}
+
+.admin-panel .hover\:bg-primary:hover {
+  background-color: #ec4899 !important; /* pink-500 */
+}
+
+.admin-panel .bg-primary-hover {
+  background-color: #ec4899 !important; /* pink-500 */
+}
+
+.admin-panel .hover\:bg-primary-hover:hover {
+  background-color: #db2777 !important; /* pink-600 */
+}
+
+.admin-panel .bg-secondary {
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+/* Text colors */
+.admin-panel h1, 
+.admin-panel h2, 
+.admin-panel h3, 
+.admin-panel h4, 
+.admin-panel h5, 
+.admin-panel h6 {
+  color: #111827 !important; /* gray-900 */
+}
+
+.admin-panel .text-foreground {
+  color: #111827 !important; /* gray-900 */
+}
+
+.admin-panel .text-muted-foreground {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+.admin-panel .text-primary {
+  color: #f472b6 !important; /* pink-400 */
+}
+
+.admin-panel .text-primary-foreground {
+  color: #ffffff !important;
+}
+
+.admin-panel .text-secondary {
+  color: #f3f4f6 !important; /* gray-100 */
+}
+
+.admin-panel .text-secondary-foreground {
+  color: #374151 !important; /* gray-700 */
+}
+
+.admin-panel p,
+.admin-panel span,
+.admin-panel div,
+.admin-panel a:not(.text-blue-600):not(.text-pink-500):not(.text-white):not(.bg-pink-600):not(.bg-red-600),
+.admin-panel li {
+  color: #4b5563 !important; /* gray-600 - default text */
+}
+
+.admin-panel .text-gray-500,
+.admin-panel .text-gray-600,
+.admin-panel .text-gray-700,
+.admin-panel .text-gray-800,
+.admin-panel .text-gray-900 {
+  color: #4b5563 !important;
+}
+
+.admin-panel .text-black {
+  color: #000000 !important;
+}
+
+.admin-panel .text-blue-600,
+.admin-panel a.text-blue-600 {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.admin-panel .text-pink-500,
+.admin-panel a.text-pink-500 {
+  color: #ec4899 !important; /* pink-500 */
+}
+
+/* Border colors */
+.admin-panel .border-border {
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Form labels */
+.admin-panel label {
+  color: #374151 !important; /* gray-700 */
+}
+
+/* Overrides for specific elements */
+.admin-panel .bg-white.shadow-md {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+
+/* Button overrides */
+.admin-panel .bg-primary {
+  background-color: #f472b6 !important; /* pink-400 */
+}
+
+.admin-panel button.bg-pink-600,
+.admin-panel a.bg-pink-600,
+.admin-panel .bg-pink-600 {
+  background-color: #db2777 !important; /* pink-600 */
+  color: #ffffff !important;
+}
+
+.admin-panel button.hover\:bg-pink-700:hover,
+.admin-panel a.hover\:bg-pink-700:hover,
+.admin-panel .hover\:bg-pink-700:hover {
+  background-color: #be185d !important; /* pink-700 */
+}
+
+.admin-panel button.bg-red-600,
+.admin-panel a.bg-red-600,
+.admin-panel .bg-red-600 {
+  background-color: #dc2626 !important; /* red-600 */
+  color: #ffffff !important;
+}
+
+.admin-panel button.hover\:bg-red-700:hover,
+.admin-panel a.hover\:bg-red-700:hover,
+.admin-panel .hover\:bg-red-700:hover {
+  background-color: #b91c1c !important; /* red-700 */
+}
+
+/* Table overrides */
+.admin-panel table {
+  color: #374151 !important; /* gray-700 */
+}
+
+.admin-panel table th {
+  color: #111827 !important; /* gray-900 */
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+.admin-panel table td {
+  color: #4b5563 !important; /* gray-600 */
+}
+
+.admin-panel .divide-border > * + * {
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Card and panel backgrounds */
+.admin-panel .card,
+.admin-panel .panel {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Breadcrumb overrides */
+.admin-panel nav[aria-label="Breadcrumb"] ol li a {
+  color: #6b7280 !important; /* gray-500 - Regular breadcrumb links */
+}
+
+.admin-panel nav[aria-label="Breadcrumb"] ol li a.text-blue-600,
+.admin-panel nav[aria-label="Breadcrumb"] ol li span.text-blue-600 {
+  color: #2563eb !important; /* blue-600 - Active breadcrumb */
+}
+
+/* Admin header and footer */
+.admin-panel header,
+.admin-panel footer {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Links in tables and cards */
+.admin-panel table a,
+.admin-panel .card a,
+.admin-panel .panel a {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.admin-panel table a:hover,
+.admin-panel .card a:hover,
+.admin-panel .panel a:hover {
+  text-decoration: underline;
+}
+
+/* Success and error colors */
+.admin-panel .text-green-600 {
+  color: #059669 !important; /* green-600 */
+}
+
+.admin-panel .text-red-600 {
+  color: #dc2626 !important; /* red-600 */
+}

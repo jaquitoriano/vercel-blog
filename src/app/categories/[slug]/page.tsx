@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostsByCategory } from '@/data';
-import { categories } from '@/data/categories';
+import { getPostsByCategory, getAllCategories } from '@/lib/postgresData';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const categories = await getAllCategories();
   const category = categories.find(cat => cat.slug === params.slug);
   
   if (!category) {
@@ -23,14 +23,15 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  const categories = await getAllCategories();
   const category = categories.find(cat => cat.slug === params.slug);
   
   if (!category) {
     notFound();
   }
   
-  const posts = getPostsByCategory(params.slug);
+  const posts = await getPostsByCategory(params.slug);
 
   return (
     <div className="content-wide">

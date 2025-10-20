@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostsByTag } from '@/data';
+import { getPostsByTag, getAllTags } from '@/lib/postgresData';
 import { tags } from '@/data/tags';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const tags = await getAllTags();
   const tag = tags.find(t => t.slug === params.slug);
   
   if (!tag) {
@@ -23,14 +24,15 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function TagPage({ params }: { params: { slug: string } }) {
+export default async function TagPage({ params }: { params: { slug: string } }) {
+  const tags = await getAllTags();
   const tag = tags.find(t => t.slug === params.slug);
   
   if (!tag) {
     notFound();
   }
   
-  const posts = getPostsByTag(params.slug);
+  const posts = await getPostsByTag(params.slug);
 
   return (
     <div className="content-wide">

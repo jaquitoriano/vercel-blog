@@ -1,0 +1,8 @@
+# robots.txt for Blog Template
+User-agent: *
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Allow all crawlers to all other paths
+User-agent: *
+Allow: /

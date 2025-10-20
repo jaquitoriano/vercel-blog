@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostBySlugWithRelations, getRelatedPosts, getPostWithComments } from '@/data';
+import { getPostBySlugWithRelations, getRelatedPosts, getPostWithComments } from '@/lib/postgresData';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
@@ -10,8 +10,8 @@ import ImageHandler from '@/components/ImageHandler';
 import ReactMarkdown from 'react-markdown';
 
 // Generate metadata for the page
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = getPostBySlugWithRelations(params.slug);
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlugWithRelations(params.slug);
   
   if (!post) {
     return {
@@ -26,16 +26,16 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function Post({ params }: { params: { slug: string } }) {
-  const post = getPostBySlugWithRelations(params.slug);
+export default async function Post({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlugWithRelations(params.slug);
   
   if (!post) {
     notFound();
   }
 
   const readTime = calculateReadTime(post.content);
-  const relatedPosts = getRelatedPosts(post.id, 3);
-  const postWithComments = getPostWithComments(post.id);
+  const relatedPosts = await getRelatedPosts(post.id, 3);
+  const postWithComments = await getPostWithComments(post.id);
   const comments = postWithComments?.comments || [];
   
   return (
@@ -169,17 +169,15 @@ export default function Post({ params }: { params: { slug: string } }) {
       </div>
       
       {/* Featured Image */}
-      {post.coverImage && (
-        <div className="mb-10 rounded-lg overflow-hidden">
-          <ImageHandler 
-            src={post.coverImage}
-            alt={post.title}
-            className="w-full h-auto rounded-lg"
-            isAvatar={false}
-            name={post.title}
-          />
-        </div>
-      )}
+      <div className="mb-10 rounded-lg overflow-hidden">
+        <ImageHandler 
+          src={post.coverImage || ''}
+          alt={post.title}
+          className="w-full h-auto rounded-lg"
+          isAvatar={false}
+          name={post.title}
+        />
+      </div>
       
       {/* Post Content */}
       <div className="prose dark:prose-dark max-w-none mb-12">

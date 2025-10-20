@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostsByAuthor } from '@/data';
+import { getPostsByAuthor, getAllAuthors } from '@/lib/postgresData';
 import { authors, getAuthorById } from '@/data/authors';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 
-export function generateMetadata({ params }: { params: { id: string } }) {
-  const author = getAuthorById(params.id);
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const authors = await getAllAuthors();
+  const author = authors.find(a => a.id === params.id);
   
   if (!author) {
     return {
@@ -23,14 +24,15 @@ export function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function AuthorPage({ params }: { params: { id: string } }) {
-  const author = getAuthorById(params.id);
+export default async function AuthorPage({ params }: { params: { id: string } }) {
+  const authors = await getAllAuthors();
+  const author = authors.find(a => a.id === params.id);
   
   if (!author) {
     notFound();
   }
   
-  const posts = getPostsByAuthor(params.id);
+  const posts = await getPostsByAuthor(params.id);
 
   return (
     <div className="content-standard">

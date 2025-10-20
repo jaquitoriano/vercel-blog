@@ -1,0 +1,17 @@
+[
+  {
+    "id": "category-1",
+    "name": "Technology",
+    "slug": "technology"
+  },
+  {
+    "id": "category-2",
+    "name": "Design",
+    "slug": "design"
+  },
+  {
+    "id": "category-3",
+    "name": "Development",
+    "slug": "development"
+  }
+]

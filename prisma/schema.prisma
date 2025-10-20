@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Author {
+  id        String   @id @default(uuid())
+  name      String
+  avatar    String?
+  bio       String?
+  social    Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  posts     Post[]
+
+  @@map("authors")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  posts     Post[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  posts     PostTag[]
+
+  @@map("tags")
+}
+
+model Post {
+  id         String     @id @default(uuid())
+  title      String
+  slug       String     @unique
+  excerpt    String
+  content    String
+  coverImage String?    @map("cover_image")
+  date       DateTime
+  featured   Boolean    @default(false)
+  views      Int        @default(0)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  authorId   String     @map("author_id")
+  author     Author     @relation(fields: [authorId], references: [id])
+  categoryId String     @map("category_id")
+  category   Category   @relation(fields: [categoryId], references: [id])
+  status     PostStatus @default(DRAFT)
+  tags       PostTag[]
+  comments   Comment[]
+
+  @@map("posts")
+}
+
+model PostTag {
+  postId    String   @map("post_id")
+  post      Post     @relation(fields: [postId], references: [id])
+  tagId     String   @map("tag_id")
+  tag       Tag      @relation(fields: [tagId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  content     String
+  authorName  String   @map("author_name")
+  authorEmail String?  @map("author_email")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  postId      String   @map("post_id")
+  post        Post     @relation(fields: [postId], references: [id])
+
+  @@map("comments")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String
+  emailVerified DateTime? @map("email_verified")
+  password      String
+  image         String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  CORRECTED
+}

@@ -1,21 +1,23 @@
 import Link from 'next/link';
-import { tags } from '@/data/tags';
-import { getPostsByTag } from '@/data';
+import { getAllTags, getPostsByTag } from '@/lib/postgresData';
 
 export const metadata = {
   title: 'Tags',
   description: 'Browse posts by tag',
 };
 
-export default function TagsPage() {
+export default async function TagsPage() {
+  // Get all tags from database
+  const tags = await getAllTags();
+  
   // Get post counts for each tag
-  const tagsWithCount = tags.map(tag => {
-    const posts = getPostsByTag(tag.slug);
+  const tagsWithCount = await Promise.all(tags.map(async tag => {
+    const posts = await getPostsByTag(tag.slug);
     return {
       ...tag,
       count: posts.length
     };
-  });
+  }));
 
   // Calculate tag sizes based on post count for a tag cloud effect
   const maxCount = Math.max(...tagsWithCount.map(tag => tag.count));

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { authors } from '@/data/authors';
-import { getPostsByAuthor } from '@/data';
+import { getPostsByAuthor, getAllAuthors } from '@/lib/postgresData';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 
@@ -9,15 +9,18 @@ export const metadata = {
   description: 'Meet our team of writers and contributors',
 };
 
-export default function AuthorsPage() {
+export default async function AuthorsPage() {
+  // Get all authors from database
+  const authors = await getAllAuthors();
+  
   // Get post counts for each author
-  const authorsWithPostCount = authors.map(author => {
-    const posts = getPostsByAuthor(author.id);
+  const authorsWithPostCount = await Promise.all(authors.map(async (author) => {
+    const posts = await getPostsByAuthor(author.id);
     return {
       ...author,
       postCount: posts.length
     };
-  });
+  }));
 
   return (
     <div className="content-standard">

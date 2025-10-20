@@ -1,16 +1,15 @@
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
-import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/data';
+import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/lib/postgresData';
 import { formatDate } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
 
-// Get data from our mock database
-const featuredPosts = getFeaturedPostsWithRelations();
-const featuredPost = featuredPosts[0]; // Get the first featured post
-const recentPosts = getRecentPostsWithRelations(3);
-
-export default function Home() {
+export default async function Home() {
+  // Get data from PostgreSQL database
+  const featuredPosts = await getFeaturedPostsWithRelations();
+  const featuredPost = featuredPosts[0]; // Get the first featured post
+  const recentPosts = await getRecentPostsWithRelations(3);
   return (
     <div className="content-wide">
       {/* Hero Section */}
@@ -42,20 +41,18 @@ export default function Home() {
         </h2>
         {featuredPost ? (
           <Card hover>
-            {featuredPost.coverImage && (
-              <div className="w-full h-64 bg-muted overflow-hidden">
-                <ImageHandler 
-                  src={featuredPost.coverImage} 
-                  alt={featuredPost.title}
-                  className="w-full h-full object-cover"
-                  isAvatar={false}
-                  name={featuredPost.title}
-                />
-              </div>
-            )}
+            <div className="w-full h-64 bg-muted overflow-hidden">
+              <ImageHandler 
+                src={featuredPost.coverImage || ''} 
+                alt={featuredPost.title}
+                className="w-full h-full object-cover"
+                isAvatar={false}
+                name={featuredPost.title}
+              />
+            </div>
             <CardHeader>
               <div className="flex flex-wrap gap-2 mb-3">
-                {featuredPost.tags.map(tag => (
+                {featuredPost.tags && featuredPost.tags.map(tag => (
                   <span key={tag.id} className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
                     {tag.name}
                   </span>
@@ -124,25 +121,23 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {recentPosts.map((post) => (
             <Card key={post.id} hover className="flex flex-col">
-              {post.coverImage && (
-                <div className="w-full h-40 bg-muted overflow-hidden">
-                  <ImageHandler 
-                    src={post.coverImage} 
-                    alt={post.title}
-                    className="w-full h-full object-cover"
-                    isAvatar={false}
-                    name={post.title}
-                  />
-                </div>
-              )}
+              <div className="w-full h-40 bg-muted overflow-hidden">
+                <ImageHandler 
+                  src={post.coverImage || ''} 
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                  isAvatar={false}
+                  name={post.title}
+                />
+              </div>
               <CardHeader>
                 <div className="flex flex-wrap gap-1 mb-2">
-                  {post.tags.slice(0, 2).map(tag => (
+                  {post.tags && post.tags.slice(0, 2).map(tag => (
                     <span key={tag.id} className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
                       {tag.name}
                     </span>
                   ))}
-                  {post.tags.length > 2 && (
+                  {post.tags && post.tags.length > 2 && (
                     <span className="text-xs px-2 py-0.5 bg-secondary text-secondary-foreground rounded-full">
                       +{post.tags.length - 2}
                     </span>

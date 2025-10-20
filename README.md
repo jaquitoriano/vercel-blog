@@ -1,181 +1,114 @@
-# Next.js Blog Template# Vercel Blog CMS
+# Vercel Blog CMS
 
+A modern, responsive blog platform built with Next.js, React, TypeScript, and Tailwind CSS. This blog application now uses Vercel Postgres for data storage.
 
+## Features
 
-A modern, responsive blog template built with Next.js, React, TypeScript, and Tailwind CSS.A simple blog CMS built with Next.js and deployable on Vercel. This project includes a custom CMS for blog posts with Markdown support.
+- 📝 Blog post creation and editing with Markdown support
+- 🔒 User and author management
+- 📱 Responsive design for all devices
+- 🚀 Ready for deployment on Vercel
+- 🔄 SSR and SSG for optimal performance
+- 💾 PostgreSQL database via Vercel Postgres
+- 🔍 SEO optimized
 
+## Database Migration
 
+The project has been migrated from SQLite to Vercel Postgres. The migration process involved:
 
-## Features## Features
+1. Updating the Prisma schema to use PostgreSQL as the provider
+2. Creating a baseline migration for the existing database schema
+3. Updating environment variables to use Vercel Postgres connection strings
+4. Creating and running a seed script to populate the database with sample data
 
+## Getting Started
 
+### Prerequisites
 
-- Modern, clean design- 📝 Blog post creation and editing with Markdown support
-
-- Dark mode support with Next.js Themes- 🔒 Admin authentication
-
-- Fully responsive- 📱 Responsive design
-
-- TypeScript for type safety- 🚀 Ready for deployment on Vercel
-
-- Tailwind CSS for styling- 🔄 SSR and SSG for optimal performance
-
-- Authentication ready
-
-- SEO optimized## Getting Started
-
-
-
-## Getting Started### Prerequisites
-
-
-
-### Prerequisites- Node.js 18+ and npm
-
-
-
-- Node.js 16.8.0 or later### Local Development
-
-- npm or yarn
-
-1. Clone the repository:
+- Node.js 18+ and npm
 
 ### Installation
 
+1. Clone the repository or download the source code:
+
 ```bash
-
-1. Clone the repository or download the source code:git clone <repository-url>
-
+git clone <repository-url>
 cd vercel-blog
-
-```bash```
-
-git clone https://github.com/yourusername/vercel-blog.git
-
-cd vercel-blog2. Install dependencies:
-
 ```
+
+2. Install dependencies:
 
 ```bash
+npm install
+```
 
-2. Install dependencies:npm install
+3. Set up environment variables in `.env.local`:
 
 ```
+POSTGRES_PRISMA_URL="postgres://..."
+POSTGRES_URL_NON_POOLING="postgres://..."
+```
+
+4. Run the development server:
 
 ```bash
-
-npm install3. Run the development server:
-
-# or
-
-yarn install```bash
-
-```npm run dev
-
+npm run dev
 ```
 
-3. Run the development server:
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Management
+
+### Seed the Database
+
+To seed the database with sample data:
 
 ```bash
-
-npm run dev### Admin Access
-
-# or
-
-yarn devYou can access the admin dashboard at [http://localhost:3000/admin](http://localhost:3000/admin)
-
+node prisma/seed-postgres.js
 ```
 
-Default admin credentials:
+### Sync Schema with Database
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.- Email: admin@example.com
+To sync the Prisma schema with the database:
 
-- Password: adminpassword123
+```bash
+npx prisma db push
+```
+
+### Prisma Studio
+
+To explore your database with Prisma Studio:
+
+```bash
+npx prisma studio
+```
 
 ## Project Structure
 
-## Project Structure
+- `src/app/` - Application pages using Next.js App Router
+- `src/components/` - React components
+- `src/lib/` - Utility functions and database access
+- `src/types` - TypeScript type definitions
+- `prisma/` - Database schema and migrations
 
-```
+## Built With
 
-vercel-blog/- `src/app/` - Application pages using Next.js App Router
+- [Next.js](https://nextjs.org/) - React framework
+- [TailwindCSS](https://tailwindcss.com/) - CSS framework
+- [Prisma](https://prisma.io/) - Database ORM
+- [Vercel Postgres](https://vercel.com/storage/postgres) - Database
+- [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
 
-├── public/            # Static assets- `src/components/` - React components
-
-├── src/- `src/lib/` - Utility functions
-
-│   ├── app/           # App router pages- `content/posts/` - Markdown files for blog posts
-
-│   │   ├── about/     # About page
-
-│   │   ├── posts/     # Posts pages## Built With
-
-│   │   ├── globals.css # Global styles
-
-│   │   └── layout.tsx # Root layout- [Next.js](https://nextjs.org/) - React framework
-
-│   ├── components/    # Reusable components- [TailwindCSS](https://tailwindcss.com/) - CSS framework
-
-│   └── lib/           # Utilities and helpers- [NextAuth.js](https://next-auth.js.org/) - Authentication
-
-├── package.json       # Project dependencies- [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
-
-├── tailwind.config.js # Tailwind configuration
-
-└── tsconfig.json      # TypeScript configuration## Deployment
-
-```
+## Deployment
 
 You can deploy this project to Vercel with a few clicks:
 
-## Customization
-
 1. Push your code to a GitHub repository
-
-### Theme2. Go to [Vercel](https://vercel.com) and create a new project
-
+2. Go to [Vercel](https://vercel.com) and create a new project
 3. Import your repository
+4. Set up the environment variables for Postgres connection
+5. Deploy!
 
-You can customize the theme by modifying `tailwind.config.js` and `src/app/globals.css`.4. Deploy!
+## License
 
-
-
-### Adding Pages## Customization
-
-
-
-1. Create a new directory in `src/app/` with the name of your page### Blog Settings
-
-2. Create a `page.tsx` file inside that directory
-
-3. Export a default React component from that fileYou can customize the blog settings in `src/app/layout.tsx` to change the title, description, and other metadata.
-
-
-
-### Adding Components### Authentication
-
-
-
-Create new components in the `src/components/` directory and import them in your pages.This project uses a simple in-memory authentication system. In a production environment, you should connect it to a database or authentication provider.
-
-
-
-## License### Styling
-
-
-
-This project is licensed under the MIT License - see the LICENSE file for details.The project uses TailwindCSS for styling. You can customize the theme in `tailwind.config.js`.
-
-
-
-## Acknowledgments## License
-
-
-
-- [Next.js](https://nextjs.org/)This project is open source and available under the [MIT License](LICENSE).
-
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography)
-- [TypeScript](https://www.typescriptlang.org/)
+This project is open source and available under the [MIT License](LICENSE).

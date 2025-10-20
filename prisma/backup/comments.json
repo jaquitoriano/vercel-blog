@@ -1,0 +1,20 @@
+[
+  {
+    "id": "comment-1",
+    "content": "Great article! This helped me understand Next.js better.",
+    "authorName": "Mark Wilson",
+    "authorEmail": "mark@example.com",
+    "postId": "post-1",
+    "createdAt": "2023-06-16T00:00:00.000Z",
+    "updatedAt": "2023-06-16T00:00:00.000Z"
+  },
+  {
+    "id": "comment-2",
+    "content": "Thanks for the clear explanation of CSS Grid. I'll be using these techniques in my next project.",
+    "authorName": "Sarah Johnson",
+    "authorEmail": "sarah@example.com",
+    "postId": "post-2",
+    "createdAt": "2023-07-12T00:00:00.000Z",
+    "updatedAt": "2023-07-12T00:00:00.000Z"
+  }
+]
