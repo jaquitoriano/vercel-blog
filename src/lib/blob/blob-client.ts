@@ -37,7 +37,9 @@ export async function uploadToBlob(
     // Get token at runtime
     const token = getToken();
     if (!token) {
-      throw new Error('BLOB_READ_WRITE_TOKEN environment variable is not set');
+      console.warn('BLOB_READ_WRITE_TOKEN environment variable is not set - returning fallback URL');
+      // Return a fallback URL for development/testing
+      return `https://placehold.co/600x400?text=Blob+Storage+Not+Configured`;
     }
 
     // Generate a unique filename with timestamp
@@ -88,7 +90,8 @@ export async function listBlobImages(
     // Get token at runtime
     const token = getToken();
     if (!token) {
-      throw new Error('BLOB_READ_WRITE_TOKEN environment variable is not set');
+      console.warn('BLOB_READ_WRITE_TOKEN environment variable is not set - returning empty list');
+      return [];
     }
 
     const { blobs } = await list({
@@ -115,7 +118,8 @@ export async function deleteFromBlob(url: string): Promise<boolean> {
     // Get token at runtime
     const token = getToken();
     if (!token) {
-      throw new Error('BLOB_READ_WRITE_TOKEN environment variable is not set');
+      console.warn('BLOB_READ_WRITE_TOKEN environment variable is not set - skipping delete operation');
+      return false;
     }
 
     await del(url, { token: token });

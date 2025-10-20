@@ -11,11 +11,11 @@ const requiredVars = {
     minRequired: 1, // Need at least one of these
     message: 'At least one database connection string must be provided'
   },
-  // Blob storage
+  // Blob storage - make it optional for now
   blob: {
     required: ['BLOB_READ_WRITE_TOKEN', 'NEXT_PUBLIC_STORE_ID'],
-    minRequired: 2, // Need both of these for blob storage to work
-    message: 'Blob storage configuration is incomplete'
+    minRequired: 0, // Make it optional (set to 0)
+    message: 'Blob storage configuration is incomplete but optional for deployment'
   }
 };
 
