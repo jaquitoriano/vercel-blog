@@ -23,11 +23,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Set cookie with user's email (not including sensitive data)
+    // Log the cookie settings for debugging
+    console.log('Setting auth cookie with these options:', {
+      name: "admin-auth",
+      value: user.email,
+      httpOnly: true,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      domain: request.headers.get('host')?.split(':')[0] || undefined,
+      environment: process.env.NODE_ENV || 'unknown'
+    });
+    
     cookies().set({
       name: "admin-auth",
       value: user.email,
       httpOnly: true,
       path: "/",
+      // Always set secure to false in development, true in production
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24, // 1 day
       sameSite: "lax",

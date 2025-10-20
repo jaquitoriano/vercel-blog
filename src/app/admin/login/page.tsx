@@ -16,6 +16,7 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
+      console.log('Attempting login...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -25,10 +26,21 @@ export default function LoginPage() {
       });
       
       const data = await response.json();
+      console.log('Login response:', { status: response.status, data });
       
       if (response.ok && data.success) {
         // The cookie is set by the API
-        router.push('/admin/dashboard');
+        console.log('Login successful, redirecting to dashboard...');
+        try {
+          await router.push('/admin/dashboard');
+          // If we're still here, navigation didn't occur
+          console.log('Navigation to dashboard may have failed, trying window.location');
+          window.location.href = '/admin/dashboard';
+        } catch (navError) {
+          console.error('Navigation error:', navError);
+          // Fallback if router.push fails
+          window.location.href = '/admin/dashboard';
+        }
       } else {
         setError(data.message || 'Invalid email or password');
       }

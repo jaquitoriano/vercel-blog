@@ -11,6 +11,16 @@ export async function middleware(request: NextRequest) {
   const authCookie = request.cookies.get("admin-auth");
   const isLoggedIn = !!authCookie;
   
+  // Debug logging for auth state
+  console.log('Middleware auth check:', {
+    path: request.nextUrl.pathname,
+    isAdminPath,
+    isLoginPath,
+    hasAuthCookie: !!authCookie,
+    authCookieValue: authCookie ? `${authCookie.value.substring(0, 3)}...` : 'none',
+    isLoggedIn
+  });
+  
   // Add security headers for admin paths
   const response = NextResponse.next();
   
