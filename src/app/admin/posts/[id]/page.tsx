@@ -107,12 +107,12 @@ export default async function ViewPostPage({ params }: ViewPostPageProps) {
             
             <div>
               <h3 className="text-lg font-medium mb-1">Author</h3>
-              <p>{post.author.name}</p>
+              <p>{post.author?.name || 'Unknown author'}</p>
             </div>
             
             <div>
               <h3 className="text-lg font-medium mb-1">Category</h3>
-              <p>{post.category.name}</p>
+              <p>{post.category?.name || 'Uncategorized'}</p>
             </div>
             
             <div>

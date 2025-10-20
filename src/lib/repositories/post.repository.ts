@@ -103,8 +103,8 @@ export const postRepository = {
       // Combine all data
       return posts.map(post => ({
         ...post,
-        author: authorsMap.get(post.authorId),
-        category: categoriesMap.get(post.categoryId),
+        author: authorsMap.get(post.authorId) || null,
+        category: categoriesMap.get(post.categoryId) || null,
         tags: postTagsMap.get(post.id) || [],
       }));
     } catch (error) {
@@ -147,8 +147,8 @@ export const postRepository = {
       // Combine all data
       return posts.map(post => ({
         ...post,
-        author: authorsMap.get(post.authorId),
-        category: categoriesMap.get(post.categoryId),
+        author: authorsMap.get(post.authorId) || null,
+        category: categoriesMap.get(post.categoryId) || null,
         _count: {
           tags: tagCountMap.get(post.id) || 0,
           comments: commentCountMap.get(post.id) || 0
@@ -259,7 +259,7 @@ export const postRepository = {
     authorId: string;
     categoryId: string;
     featured: boolean;
-    status?: string;
+    status?: 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'CORRECTED';
     date?: Date;
     tags: string[];
   }) {
@@ -335,7 +335,7 @@ export const postRepository = {
     authorId?: string;
     categoryId?: string;
     featured?: boolean;
-    status?: string;
+    status?: 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'CORRECTED';
     date?: Date;
     tags?: string[];
   }) {

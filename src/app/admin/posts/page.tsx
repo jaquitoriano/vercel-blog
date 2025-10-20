@@ -163,14 +163,22 @@ export default async function AdminPosts({ searchParams }: { searchParams: { sta
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <Link href={`/admin/authors/${post.author.id}`} className="hover:underline">
-                      {post.author.name}
-                    </Link>
+                    {post.author ? (
+                      <Link href={`/admin/authors/${post.author.id}`} className="hover:underline">
+                        {post.author.name}
+                      </Link>
+                    ) : (
+                      <span className="text-gray-500">Unknown author</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
-                    <Link href={`/admin/categories/${post.category.id}`} className="hover:underline">
-                      {post.category.name}
-                    </Link>
+                    {post.category ? (
+                      <Link href={`/admin/categories/${post.category.id}`} className="hover:underline">
+                        {post.category.name}
+                      </Link>
+                    ) : (
+                      <span className="text-gray-500">Uncategorized</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">{post._count.tags}</td>
                   <td className="px-6 py-4">{post._count.comments}</td>
