@@ -11,7 +11,7 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const query = searchParams ? searchParams.get('q') || '' : '';
   
   const [searchQuery, setSearchQuery] = useState(query);
   

@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+// Load environment variables from .env.production if running locally
+if (!process.env.VERCEL) {
+  try {
+    console.log('Loading environment variables from .env.production');
+    require('dotenv').config({ path: '.env.production' });
+  } catch (error) {
+    console.error('Error loading .env.production:', error);
+  }
+}
+
 console.log('🔍 Running pre-build environment check...');
 console.log('Build platform:', process.env.VERCEL ? 'Vercel' : 'Local/Other');
 

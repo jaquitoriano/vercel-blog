@@ -17,7 +17,7 @@ export default function AdminIndicator({ userStatus }: { userStatus: UserStatus 
   }, []);
   
   // Don't show on admin pages
-  if (pathname.startsWith('/admin')) {
+  if (pathname && pathname.startsWith('/admin')) {
     return null;
   }
   

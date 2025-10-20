@@ -109,7 +109,7 @@ export default function AdminSidebar() {
       <nav className="mt-6 px-3 flex-grow">
         <ul className="space-y-1">
           {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isActive = pathname ? (pathname === item.href || pathname.startsWith(`${item.href}/`)) : false;
             return (
               <li key={item.name}>
                 <Link

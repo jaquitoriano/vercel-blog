@@ -15,6 +15,10 @@ export default function AdminTemplate({ children }: { children: React.ReactNode 
   
   // Extract page title from pathname for breadcrumb display
   const getPageInfo = () => {
+    if (!pathname) {
+      return { section: 'Dashboard', subSection: null, isSubPage: false };
+    }
+    
     const path = pathname.split('/').filter(Boolean);
     const section = path[1] ? path[1].charAt(0).toUpperCase() + path[1].slice(1) : 'Dashboard';
     const isSubPage = path.length > 2;
