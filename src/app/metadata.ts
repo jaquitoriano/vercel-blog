@@ -30,16 +30,16 @@ export async function generateMetadata(
   return {
     metadataBase: new URL(baseUrl),
     title: {
-      default: settings.meta_title || parentMetadata.title?.absolute || 'Blog Template',
-      template: `%s | ${settings.site_title || 'Blog Template'}`
+      default: settings.meta_title || parentMetadata.title?.absolute || 'Ikira',
+      template: `%s | ${settings.site_title || 'Ikira'}`
     },
-    description: settings.meta_description || parentMetadata.description || 'A modern blog template built with Next.js',
+    description: settings.meta_description || parentMetadata.description || 'A modern Ikira built with Next.js',
     keywords: settings.meta_keywords || undefined,
     openGraph: {
-      title: settings.meta_title || parentMetadata.openGraph?.title || 'Blog Template',
-      description: settings.meta_description || parentMetadata.openGraph?.description || 'A modern blog template built with Next.js',
+      title: settings.meta_title || parentMetadata.openGraph?.title || 'Ikira',
+      description: settings.meta_description || parentMetadata.openGraph?.description || 'A modern Ikira built with Next.js',
       url: baseUrl,
-      siteName: settings.site_title || 'Blog Template',
+      siteName: settings.site_title || 'Ikira',
       locale: 'en_US',
       type: 'website',
       images: settings.og_image 
@@ -48,8 +48,8 @@ export async function generateMetadata(
     },
     twitter: {
       card: 'summary_large_image',
-      title: settings.meta_title || parentMetadata.twitter?.title || 'Blog Template',
-      description: settings.meta_description || parentMetadata.twitter?.description || 'A modern blog template built with Next.js',
+      title: settings.meta_title || parentMetadata.twitter?.title || 'Ikira',
+      description: settings.meta_description || parentMetadata.twitter?.description || 'A modern Ikira built with Next.js',
       images: settings.og_image ? [settings.og_image] : parentMetadata.twitter?.images,
       creator: settings.twitter_handle || undefined,
     },

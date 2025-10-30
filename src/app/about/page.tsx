@@ -29,7 +29,7 @@ export default function AboutPage() {
         
         <h2>Our Mission</h2>
         <p>
-          At Blog Template, we strive to provide valuable, well-researched content that helps
+          At Ikira, we strive to provide valuable, well-researched content that helps
           developers and designers improve their skills and stay up-to-date with the latest 
           trends and technologies in the web development world.
         </p>

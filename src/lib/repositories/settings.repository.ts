@@ -23,14 +23,14 @@ interface PrismaError extends Error {
 // Define the default settings
 const DEFAULT_SETTINGS = {
   // General settings
-  site_title: 'Blog Template',
-  site_description: 'A Next.js Blog Template',
+  site_title: 'Ikira',
+  site_description: 'A Next.js Ikira',
   site_logo: '/logo.png',
   site_favicon: '/favicon.ico',
   
   // SEO settings
-  meta_title: 'Blog Template | A Next.js Blog',
-  meta_description: 'A powerful, feature-rich blog template built with Next.js and Tailwind CSS',
+  meta_title: 'Ikira | A Next.js Blog',
+  meta_description: 'A powerful, feature-rich Ikira built with Next.js and Tailwind CSS',
   meta_keywords: 'blog, next.js, react, tailwind, typescript',
   og_image: '/og-image.jpg',
   twitter_handle: '@yourtwitterhandle',
@@ -49,7 +49,7 @@ const DEFAULT_SETTINGS = {
   google_analytics_id: '',
   
   // Footer settings
-  footer_text: '© 2025 Blog Template. All rights reserved.',
+  footer_text: '© 2025 Ikira. All rights reserved.',
   footer_links: JSON.stringify([
     { name: 'Home', url: '/' },
     { name: 'About', url: '/about' },

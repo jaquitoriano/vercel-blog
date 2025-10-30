@@ -28,10 +28,10 @@ export default function Header({ userStatus }: HeaderProps) {
             href="/" 
             className="font-serif text-2xl md:text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover"
           >
-            Blog Template
+            Ikira
           </Link>
           <p className="text-sm text-muted-foreground">
-            A Next.js Blog Template
+            A Next.js Ikira
           </p>
         </div>
 

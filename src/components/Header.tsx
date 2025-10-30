@@ -14,8 +14,8 @@ export default function Header() {
   };
 
   // Get settings for the header
-  const siteTitle = getSetting('site_title', 'Blog Template');
-  const siteDescription = getSetting('site_description', 'A Next.js Blog Template');
+  const siteTitle = getSetting('site_title', 'Ikira');
+  const siteDescription = getSetting('site_description', 'A Next.js Ikira');
   const siteLogo = getSetting('site_logo', '');
 
   return (

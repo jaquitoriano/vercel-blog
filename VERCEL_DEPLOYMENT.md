@@ -1,6 +1,6 @@
 # Vercel Blog
 
-A modern blog template built with Next.js 14, Tailwind CSS, and deployed on Vercel.
+A modern Ikira built with Next.js 14, Tailwind CSS, and deployed on Vercel.
 
 ## Deployment Instructions
 

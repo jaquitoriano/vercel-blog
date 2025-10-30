@@ -1,4 +1,4 @@
-# robots.txt for Blog Template
+# robots.txt for Ikira
 User-agent: *
 Allow: /
 Disallow: /admin/

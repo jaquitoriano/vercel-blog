@@ -8,9 +8,9 @@ export default function Footer() {
   const { getSetting } = useSettings();
   
   // Get settings
-  const siteTitle = getSetting('site_title', 'Blog Template');
-  const siteDescription = getSetting('site_description', 'A modern blog template built with Next.js, Tailwind CSS, and TypeScript.');
-  const footerText = getSetting('footer_text', `© ${currentYear} Blog Template. All rights reserved.`);
+  const siteTitle = getSetting('site_title', 'Ikira');
+  const siteDescription = getSetting('site_description', 'A modern Ikira built with Next.js, Tailwind CSS, and TypeScript.');
+  const footerText = getSetting('footer_text', `© ${currentYear} Ikira. All rights reserved.`);
   
   // Social links
   const socialTwitter = getSetting('social_twitter', 'https://twitter.com');

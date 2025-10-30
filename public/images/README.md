@@ -1,6 +1,6 @@
 # Image Files
 
-This directory contains placeholder images for the blog template. Replace these files with your own images.
+This directory contains placeholder images for the Ikira. Replace these files with your own images.
 
 ## Image Sizes
 

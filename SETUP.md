@@ -1,6 +1,6 @@
 # Installation and Setup Guide
 
-This guide will help you get the blog template up and running on your local machine.
+This guide will help you get the Ikira up and running on your local machine.
 
 ## Step 1: Install Dependencies
 

@@ -78,7 +78,7 @@ export default function AdminTemplate({ children }: { children: React.ReactNode 
         <footer className="bg-white border-t border-gray-200 px-6 py-3">
           <div className="flex justify-between items-center">
             <p className="text-xs text-gray-500">
-              &copy; {new Date().getFullYear()} Your Blog Name. All rights reserved.
+              &copy; {new Date().getFullYear()} Ikira. All rights reserved.
             </p>
             <p className="text-xs text-gray-400">
               Admin v1.0.0
