@@ -41,12 +41,13 @@ export async function POST(req: NextRequest) {
     });
     
     // Upload the file to Vercel Blob
-    const url = await uploadToBlob(file, filename || file.name, folder);
+    const result = await uploadToBlob(file, filename || file.name, folder);
     
     return NextResponse.json({ 
       success: true, 
-      url,
-      message: 'Image uploaded successfully'
+      url: result.url,
+      type: result.type,
+      message: 'File uploaded successfully'
     });
   } catch (error: any) {
     console.error('Error uploading file:', error);

@@ -8,12 +8,16 @@ interface ImageSelectorProps {
   currentImageUrl: string;
   onImageSelect: (url: string) => void;
   aspectRatio?: 'square' | 'wide' | 'avatar';
+  acceptTypes?: string;
+  previewType?: 'image' | 'video';
 }
 
 export default function ImageSelector({
   currentImageUrl,
   onImageSelect,
   aspectRatio = 'wide',
+  acceptTypes,
+  previewType = 'image',
 }: ImageSelectorProps) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   
@@ -28,15 +32,23 @@ export default function ImageSelector({
       {/* Image preview */}
       <div className={`relative border border-border rounded-md overflow-hidden ${aspectRatioClasses[aspectRatio]}`}>
         {currentImageUrl ? (
-          <Image
-            src={currentImageUrl}
-            alt="Selected image"
-            fill
-            className="object-cover"
-          />
+          previewType === 'video' ? (
+            <video
+              src={currentImageUrl}
+              className="w-full h-full object-cover"
+              controls
+            />
+          ) : (
+            <Image
+              src={currentImageUrl}
+              alt="Selected media"
+              fill
+              className="object-cover"
+            />
+          )
         ) : (
           <div className="absolute inset-0 bg-background-soft flex items-center justify-center text-muted-foreground">
-            <span>No image selected</span>
+            <span>No {previewType || 'image'} selected</span>
           </div>
         )}
       </div>

@@ -32,14 +32,17 @@ export async function uploadToBlob(
   file: File | Blob,
   filename: string,
   folder: string = 'uploads'
-): Promise<string> {
+): Promise<{ url: string, type?: string }> {
   try {
     // Get token at runtime
     const token = getToken();
     if (!token) {
       console.warn('BLOB_READ_WRITE_TOKEN environment variable is not set - returning fallback URL');
       // Return a fallback URL for development/testing
-      return `https://placehold.co/600x400?text=Blob+Storage+Not+Configured`;
+      return {
+        url: `https://placehold.co/600x400?text=Blob+Storage+Not+Configured`,
+        type: 'image/png'
+      };
     }
 
     // Generate a unique filename with timestamp
@@ -63,7 +66,10 @@ export async function uploadToBlob(
     
     console.log('[DEBUG] Successfully uploaded to Vercel Blob:', url);
     
-    return url;
+    return {
+      url,
+      type: file instanceof File ? file.type : undefined
+    };
   } catch (error) {
     console.error('Error uploading to Vercel Blob:', error);
     
@@ -85,7 +91,7 @@ export async function uploadToBlob(
 export async function listBlobImages(
   folder: string = 'uploads',
   limit: number = 100
-): Promise<{ url: string, pathname: string, size: number, uploadedAt: Date }[]> {
+): Promise<{ url: string, pathname: string, size: number, uploadedAt: Date, type?: string }[]> {
   try {
     // Get token at runtime
     const token = getToken();

@@ -9,14 +9,16 @@ interface MediaImage {
   pathname: string;
   size: number;
   uploadedAt: string;
+  type?: string;
 }
 
 interface MediaGalleryProps {
   onSelect?: (imageUrl: string) => void;
   selectMode?: boolean;
+  acceptTypes?: string;
 }
 
-export default function MediaGallery({ onSelect, selectMode = false }: MediaGalleryProps) {
+export default function MediaGallery({ onSelect, selectMode = false, acceptTypes = 'image/*' }: MediaGalleryProps) {
   const [images, setImages] = useState<MediaImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -120,9 +122,19 @@ export default function MediaGallery({ onSelect, selectMode = false }: MediaGall
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Check if file is an image
-        if (!file.type.startsWith('image/')) {
-          setError('Only image files are allowed');
+        // Check if file type is accepted
+        const acceptedTypes = acceptTypes.split(',').map(type => type.trim());
+        const isAccepted = acceptedTypes.some(type => {
+          if (type.endsWith('/*')) {
+            // Handle wildcard mime types (e.g., 'image/*')
+            const baseType = type.split('/')[0];
+            return file.type.startsWith(`${baseType}/`);
+          }
+          return type === file.type;
+        });
+
+        if (!isAccepted) {
+          setError(`Only ${acceptTypes} files are allowed`);
           continue;
         }
         
@@ -225,7 +237,7 @@ export default function MediaGallery({ onSelect, selectMode = false }: MediaGall
               id="file-upload"
               type="file"
               multiple
-              accept="image/*"
+              accept={acceptTypes}
               onChange={blobConfigured ? handleFileChange : undefined}
               disabled={!blobConfigured}
               className="hidden"
@@ -274,13 +286,18 @@ export default function MediaGallery({ onSelect, selectMode = false }: MediaGall
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filteredImages.map((image) => (
-              <div 
+                <div 
                 key={image.url} 
                 className={`group relative border border-border rounded-md overflow-hidden h-40 cursor-pointer hover:border-primary transition-colors ${
                   selectMode ? 'hover:shadow-md' : ''
                 }`}
                 onClick={() => selectMode && handleImageSelect(image.url)}
               >
+                {image.type?.startsWith('video/') && (
+                  <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs z-10">
+                    Video
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center">
                   <div className="text-white text-center p-2">
                     {selectMode ? (
@@ -328,12 +345,23 @@ export default function MediaGallery({ onSelect, selectMode = false }: MediaGall
                     )}
                   </div>
                 </div>
-                <Image
-                  src={image.url}
-                  alt="Media gallery image"
-                  fill
-                  className="object-cover"
-                />
+                {image.type?.startsWith('video/') ? (
+                  <video
+                    src={image.url}
+                    className="object-cover w-full h-full"
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                  />
+                ) : (
+                  <Image
+                    src={image.url}
+                    alt="Media gallery image"
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
             ))}
           </div>
