@@ -103,6 +103,7 @@ TypeScript is a powerful addition to Next.js projects, helping catch errors earl
     authorId: "author-1",
     categoryId: "category-1",
     tags: ["tag-2", "tag-3"],
+    status: 'PUBLISHED'
   },
   {
     id: "post-2",
@@ -239,6 +240,7 @@ By focusing on accessibility from the start, you'll create components that work 
     authorId: "author-2",
     categoryId: "category-2",
     tags: ["tag-1", "tag-10"],
+    status: 'PUBLISHED'
   },
   {
     id: "post-3",
@@ -383,6 +385,7 @@ Remember that React is already quite fast for most use cases. Optimize only when
     authorId: "author-1",
     categoryId: "category-1",
     tags: ["tag-1", "tag-9"],
+    status: 'PUBLISHED'
   },
   {
     id: "post-4",
@@ -635,6 +638,7 @@ A well-implemented design system with Tailwind CSS will streamline your developm
     authorId: "author-3",
     categoryId: "category-2",
     tags: ["tag-6", "tag-5"],
+    status: 'PUBLISHED'
   },
   {
     id: "post-5",
@@ -1020,6 +1024,7 @@ From here, you can expand with features like pagination, filtering, rate limitin
     authorId: "author-1",
     categoryId: "category-1",
     tags: ["tag-7", "tag-8"],
+    status: 'PUBLISHED'
   },
   {
     id: "post-6",
@@ -1265,6 +1270,7 @@ The most important thing is consistency. Choose a workflow that fits your team's
     authorId: "author-2",
     categoryId: "category-3",
     tags: ["tag-12"],
+    status: 'PUBLISHED'
   }
 ];
 

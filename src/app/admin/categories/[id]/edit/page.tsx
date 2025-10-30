@@ -24,7 +24,10 @@ async function getCategory(id: string) {
     notFound();
   }
 
-  return category;
+  return {
+    name: category.name,
+    slug: category.slug
+  } as const;
 }
 
 export default async function EditCategoryPage({ params }: EditCategoryPageProps) {
@@ -35,7 +38,7 @@ export default async function EditCategoryPage({ params }: EditCategoryPageProps
   }
 
   const category = await getCategory(params.id);
-
+  
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">Edit Category</h1>

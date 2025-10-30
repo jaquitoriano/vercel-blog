@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 
+import { type Category } from '@prisma/client';
+
 interface CategoryFormProps {
   initialData?: {
     name: string;
     slug: string;
-    description?: string;
   };
   isEditing?: boolean;
 }
@@ -20,7 +21,7 @@ export function CategoryForm({ initialData, isEditing = false }: CategoryFormPro
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
-    description: initialData?.description || ''
+    description: ''
   });
 
   const generateSlug = (name: string) => {
