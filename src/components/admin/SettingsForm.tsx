@@ -584,6 +584,65 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 The heading above the featured posts section
               </p>
             </div>
+
+            <div className="col-span-2">
+              <label htmlFor="welcome_bg_video" className="block text-sm font-medium text-foreground mb-1">
+                Background Video URL
+              </label>
+              <div className="space-y-3">
+                <input
+                  id="welcome_bg_video"
+                  type="text"
+                  value={settings.welcome_bg_video || ''}
+                  onChange={(e) => handleChange('welcome_bg_video', e.target.value)}
+                  className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                  placeholder="Enter video URL (MP4 format)"
+                />
+                <ImageSelector
+                  currentImageUrl={settings.welcome_bg_video || ''}
+                  onImageSelect={(url) => handleChange('welcome_bg_video', url)}
+                  aspectRatio="wide"
+                  acceptTypes="video/*"
+                />
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                MP4 video file to use as the background (recommended: short loop, 15-30 seconds)
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_bg_overlay" className="block text-sm font-medium text-foreground mb-1">
+                Background Overlay Color
+              </label>
+              <input
+                id="welcome_bg_overlay"
+                type="text"
+                value={settings.welcome_bg_overlay || ''}
+                onChange={(e) => handleChange('welcome_bg_overlay', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                placeholder="rgba(0, 0, 0, 0.5)"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Color overlay for the video background (e.g., rgba(0, 0, 0, 0.5) for 50% black)
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_text_color" className="block text-sm font-medium text-foreground mb-1">
+                Text Color
+              </label>
+              <input
+                id="welcome_text_color"
+                type="text"
+                value={settings.welcome_text_color || ''}
+                onChange={(e) => handleChange('welcome_text_color', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                placeholder="#FFFFFF"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Color for the text in the welcome section (e.g., #FFFFFF for white)
+              </p>
+            </div>
           </div>
         </div>
 

@@ -34,6 +34,9 @@ const DEFAULT_SETTINGS = {
   welcome_cta_text: 'Start Reading',
   welcome_cta_link: '/posts',
   welcome_featured_text: 'Featured posts handpicked by our editors',
+  welcome_bg_video: '/videos/hero-background.mp4', // Default video background
+  welcome_bg_overlay: 'rgba(0, 0, 0, 0.5)', // Default overlay color
+  welcome_text_color: '#FFFFFF', // Default text color for hero section
   
   // SEO settings
   meta_title: 'Ikira | A Next.js Blog',

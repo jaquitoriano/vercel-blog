@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
+import HeroSection from '@/components/HeroSection';
 import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/lib/postgresData';
 import { formatDate } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
@@ -14,30 +15,21 @@ export default async function Home() {
   const recentPosts = await getRecentPostsWithRelations(3);
   const settings = await settingsRepository.getAll();
   return (
-    <div className="content-wide">
-      {/* Hero Section */}
-      <section className="mb-16">
-        <div className="rounded-lg bg-background-soft p-8 md:p-12 border border-border">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
-                {settings.welcome_heading}
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              {settings.welcome_subheading}
-            </p>
-            <Button size="lg" asChild>
-              <Link href={settings.welcome_cta_link}>
-                {settings.welcome_cta_text}
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+    <main className="relative">
+      {/* Hero Section - Full Width */}
+      <HeroSection
+        heading={settings.welcome_heading}
+        subheading={settings.welcome_subheading}
+        ctaText={settings.welcome_cta_text}
+        ctaLink={settings.welcome_cta_link}
+        bgVideo={settings.welcome_bg_video}
+        bgOverlay={settings.welcome_bg_overlay}
+      />
+
+      <div className="content-wide">
 
       {/* Featured Post */}
-      <section className="mb-16">
+      <section id="featured-post-section" className="mb-16">
         <h2 className="text-2xl md:text-3xl font-serif font-bold mb-6">
           {settings.welcome_featured_text}
         </h2>
@@ -207,6 +199,7 @@ export default async function Home() {
           </div>
         </Card>
       </section>
-    </div>
+      </div>
+    </main>
   );
 }
