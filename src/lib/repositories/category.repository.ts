@@ -5,6 +5,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  description?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -75,7 +76,7 @@ export const categoryRepository = {
     }
   },
   
-  async create(data: { name: string, slug: string }): Promise<Category> {
+  async create(data: { name: string, slug: string, description?: string }): Promise<Category> {
     try {
       const category = await prisma.category.create({
         data,
@@ -92,7 +93,7 @@ export const categoryRepository = {
     }
   },
   
-  async update(id: string, data: { name?: string, slug?: string }): Promise<Category> {
+  async update(id: string, data: { name?: string, slug?: string, description?: string | null }): Promise<Category> {
     try {
       const category = await prisma.category.update({
         where: { id },

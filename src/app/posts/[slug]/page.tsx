@@ -21,17 +21,34 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
   
+  if (post.status !== 'PUBLISHED') {
+    return {
+      title: `Preview: ${post.title}`,
+      description: post.excerpt,
+      robots: 'noindex, nofollow'
+    };
+  }
+  
   return {
     title: post.title,
     description: post.excerpt
   };
 }
 
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
 export default async function Post({ params }: { params: { slug: string } }) {
   const post = await getPostBySlugWithRelations(params.slug);
+  const session = await auth();
   
   if (!post) {
     notFound();
+  }
+
+  // Check if post is not published and user is not admin
+  if (post.status !== 'PUBLISHED' && session?.user?.role !== 'ADMIN') {
+    redirect('/403');
   }
 
   const readTime = calculateReadTime(post.content);
@@ -39,8 +56,17 @@ export default async function Post({ params }: { params: { slug: string } }) {
   const postWithComments = await getPostWithComments(post.id);
   const comments = postWithComments?.comments || [];
   
+  // Add preview banner for unpublished posts
+  const isPreview = post.status !== 'PUBLISHED';
+  
   return (
     <div className="content-standard">
+      {/* Preview Banner */}
+      {isPreview && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black px-4 py-2 text-center z-50">
+          Preview Mode - This post is not published yet
+        </div>
+      )}
       {/* Post Header */}
       <div className="mb-10">
         <Link 

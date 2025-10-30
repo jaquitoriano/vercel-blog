@@ -24,6 +24,7 @@ export default async function AdminCategories() {
               <tr>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Slug</th>
+                <th className="px-6 py-3">Description</th>
                 <th className="px-6 py-3">Posts</th>
                 <th className="px-6 py-3">Actions</th>
               </tr>
@@ -31,7 +32,7 @@ export default async function AdminCategories() {
             <tbody className="divide-y divide-border">
               {categoriesWithCounts.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-10 text-center text-muted-foreground">
+                  <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
                     No categories found
                   </td>
                 </tr>
@@ -45,6 +46,9 @@ export default async function AdminCategories() {
                   </td>
                   <td className="px-6 py-4">
                     {category.slug}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">
+                    {category.description || <em>No description</em>}
                   </td>
                   <td className="px-6 py-4">
                     {category.postCount}

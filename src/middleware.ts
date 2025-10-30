@@ -6,6 +6,7 @@ export async function middleware(request: NextRequest) {
   const isAdminApiPath = request.nextUrl.pathname.startsWith("/api/admin");
   const isLoginPath = request.nextUrl.pathname === "/admin/login";
   const isLogoutPath = request.nextUrl.pathname === "/admin/logout";
+  const isPostPath = request.nextUrl.pathname.startsWith("/posts/");
   
   // Get the auth cookie which contains the user's email
   const authCookie = request.cookies.get("admin-auth");
@@ -26,12 +27,20 @@ export async function middleware(request: NextRequest) {
     referer: request.headers.get('referer')
   });
   
-  // Add security headers for admin paths
+  // Add security headers
   const response = NextResponse.next();
   
   // Add X-Robots-Tag header for admin pages and API routes to prevent indexing
   if (isAdminPath || isAdminApiPath) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
+  // Add security headers for post pages
+  if (isPostPath) {
+    response.headers.set(
+      'X-Robots-Tag',
+      'noindex, nofollow, noarchive, nocache'
+    );
   }
   
   // Login page is accessible to everyone, but redirects if already logged in
@@ -56,5 +65,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin/:path*", 
+    "/api/admin/:path*",
+    "/posts/:path*"
+  ],
 };

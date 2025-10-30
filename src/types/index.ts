@@ -39,6 +39,7 @@ export interface Post {
   authorId: string;
   categoryId: string;
   tags: string[]; // Tag IDs
+  status: 'DRAFT' | 'PUBLISHED'
 }
 
 export interface PostWithRelations extends Omit<Post, 'authorId' | 'categoryId' | 'tags'> {

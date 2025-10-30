@@ -1,8 +1,13 @@
 # robots.txt for Blog Template
 User-agent: *
+Allow: /
 Disallow: /admin/
 Disallow: /api/admin/
+Disallow: /posts/*?preview=true
+Disallow: /posts/preview/
 
-# Allow all crawlers to all other paths
-User-agent: *
-Allow: /
+# Allow access to published posts
+Allow: /posts/
+
+# Sitemap
+Sitemap: https://ikira-blog.vercel.app/sitemap.xml
