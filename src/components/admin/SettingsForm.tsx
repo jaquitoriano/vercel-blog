@@ -164,6 +164,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </button>
           <button
             type="button"
+            onClick={() => setActiveTab('welcome')}
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
+              activeTab === 'welcome'
+                ? 'border-b-2 border-primary text-primary'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Welcome Section
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('other')}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
               activeTab === 'other'
@@ -486,6 +497,92 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 onChange={(e) => handleChange('social_github', e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Welcome Section Settings */}
+        <div className={activeTab === 'welcome' ? '' : 'hidden'}>
+          <h2 className="text-xl font-semibold mb-4">Welcome Section</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="welcome_heading" className="block text-sm font-medium text-foreground mb-1">
+                Welcome Heading
+              </label>
+              <input
+                id="welcome_heading"
+                type="text"
+                value={settings.welcome_heading || ''}
+                onChange={(e) => handleChange('welcome_heading', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                The main heading in the welcome section
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_subheading" className="block text-sm font-medium text-foreground mb-1">
+                Welcome Subheading
+              </label>
+              <input
+                id="welcome_subheading"
+                type="text"
+                value={settings.welcome_subheading || ''}
+                onChange={(e) => handleChange('welcome_subheading', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                The descriptive text below the main heading
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_cta_text" className="block text-sm font-medium text-foreground mb-1">
+                Call to Action Text
+              </label>
+              <input
+                id="welcome_cta_text"
+                type="text"
+                value={settings.welcome_cta_text || ''}
+                onChange={(e) => handleChange('welcome_cta_text', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                The text shown on the main button
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_cta_link" className="block text-sm font-medium text-foreground mb-1">
+                Call to Action Link
+              </label>
+              <input
+                id="welcome_cta_link"
+                type="text"
+                value={settings.welcome_cta_link || ''}
+                onChange={(e) => handleChange('welcome_cta_link', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                The URL the button links to (e.g., /posts)
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="welcome_featured_text" className="block text-sm font-medium text-foreground mb-1">
+                Featured Posts Heading
+              </label>
+              <input
+                id="welcome_featured_text"
+                type="text"
+                value={settings.welcome_featured_text || ''}
+                onChange={(e) => handleChange('welcome_featured_text', e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                The heading above the featured posts section
+              </p>
             </div>
           </div>
         </div>

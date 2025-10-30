@@ -5,11 +5,14 @@ import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/li
 import { formatDate } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
 
+import { settingsRepository } from '@/lib/repositories/settings.repository';
+
 export default async function Home() {
   // Get data from PostgreSQL database
   const featuredPosts = await getFeaturedPostsWithRelations();
   const featuredPost = featuredPosts[0]; // Get the first featured post
   const recentPosts = await getRecentPostsWithRelations(3);
+  const settings = await settingsRepository.getAll();
   return (
     <div className="content-wide">
       {/* Hero Section */}
@@ -18,16 +21,15 @@ export default async function Home() {
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">
               <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
-                Welcome to Our Blog
+                {settings.welcome_heading}
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Explore the latest in web development, design, and technology with our
-              in-depth articles and tutorials.
+              {settings.welcome_subheading}
             </p>
             <Button size="lg" asChild>
-              <Link href="/posts">
-                Explore All Posts
+              <Link href={settings.welcome_cta_link}>
+                {settings.welcome_cta_text}
               </Link>
             </Button>
           </div>
@@ -37,7 +39,7 @@ export default async function Home() {
       {/* Featured Post */}
       <section className="mb-16">
         <h2 className="text-2xl md:text-3xl font-serif font-bold mb-6">
-          Featured Post
+          {settings.welcome_featured_text}
         </h2>
         {featuredPost ? (
           <Card hover>

@@ -27,6 +27,13 @@ const DEFAULT_SETTINGS = {
   site_description: 'A Next.js Ikira',
   site_logo: '/logo.png',
   site_favicon: '/favicon.ico',
+
+  // Welcome section settings
+  welcome_heading: 'Welcome to Our Blog',
+  welcome_subheading: 'Discover stories, technical articles, and updates from our team',
+  welcome_cta_text: 'Start Reading',
+  welcome_cta_link: '/posts',
+  welcome_featured_text: 'Featured posts handpicked by our editors',
   
   // SEO settings
   meta_title: 'Ikira | A Next.js Blog',
