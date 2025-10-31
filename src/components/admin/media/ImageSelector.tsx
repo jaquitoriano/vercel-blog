@@ -16,8 +16,8 @@ export default function ImageSelector({
   currentImageUrl,
   onImageSelect,
   aspectRatio = 'wide',
-  acceptTypes,
-  previewType = 'image',
+  acceptTypes = 'image/*',
+  previewType = acceptTypes?.startsWith('video/') ? 'video' : 'image',
 }: ImageSelectorProps) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   
@@ -97,6 +97,7 @@ export default function ImageSelector({
                   setIsGalleryOpen(false);
                 }}
                 selectMode={true}
+                acceptTypes={acceptTypes}
               />
             </div>
           </div>

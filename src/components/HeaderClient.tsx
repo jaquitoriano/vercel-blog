@@ -3,13 +3,17 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import type { UserStatus } from '@/lib/auth/getCurrentUser';
 
 type HeaderProps = {
   userStatus: UserStatus;
+  siteTitle: string;
+  siteDescription: string;
+  siteLogo: string;
 };
 
-export default function Header({ userStatus }: HeaderProps) {
+export default function HeaderClient({ userStatus, siteTitle, siteDescription, siteLogo }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const isLoggedIn = userStatus.isLoggedIn;
@@ -24,11 +28,20 @@ export default function Header({ userStatus }: HeaderProps) {
     <header className="py-6 md:py-10 border-b border-border mb-10">
       <div className="flex flex-wrap items-center justify-between">
         <div className="mr-6">
-          <Link 
-            href="/" 
-            className="font-serif text-2xl md:text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover"
+          <Link
+            href="/"
+            className="font-serif text-2xl md:text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover flex items-center"
           >
-            Ikira
+            {siteLogo && (
+              <Image
+                src={siteLogo}
+                alt={siteTitle}
+                width={40}
+                height={40}
+                className="mr-2"
+              />
+            )}
+            {siteTitle}
           </Link>
           <p className="text-sm text-muted-foreground">
             A Next.js Ikira

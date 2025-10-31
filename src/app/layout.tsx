@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { Analytics } from '@vercel/analytics/react';
-import Header from "@/components/Header";
+import Header from "@/components/navigation/Header";
 import Footer from "@/components/Footer";
 import AdminIndicator from "@/components/AdminIndicator";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";

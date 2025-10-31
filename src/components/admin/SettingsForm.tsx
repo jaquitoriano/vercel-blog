@@ -603,6 +603,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                   onImageSelect={(url) => handleChange('welcome_bg_video', url)}
                   aspectRatio="wide"
                   acceptTypes="video/*"
+                  previewType="video"
                 />
               </div>
               <p className="mt-1 text-xs text-muted-foreground">

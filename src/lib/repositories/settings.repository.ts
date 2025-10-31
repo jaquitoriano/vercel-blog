@@ -153,6 +153,51 @@ export const settingsRepository = {
       throw error;
     }
   },
+
+  /**
+   * Get multiple settings by keys
+   */
+  async getByKeys(keys: string[]): Promise<Array<{ key: string; value: string }>> {
+    try {
+      try {
+        console.log('Initializing settings...');
+        // Try to initialize settings first
+        await this.initialize();
+        
+        console.log('Getting settings for keys:', keys);
+        // Get settings from database
+        const settings = await prisma.siteSetting.findMany({
+          where: {
+            key: {
+              in: keys
+            }
+          }
+        });
+        console.log('Found settings in database:', settings);
+
+        // Create a map of existing settings
+        const settingsMap = settings.reduce((acc, setting) => {
+          acc[setting.key] = setting.value;
+          return acc;
+        }, {} as Record<string, string>);
+
+        // Return all requested keys with values from DB or defaults
+        return keys.map(key => ({
+          key,
+          value: settingsMap[key] || DEFAULT_SETTINGS[key] || ''
+        }));
+      } catch (error) {
+        // If there's an error (likely model doesn't exist), return defaults
+        return keys.map(key => ({
+          key,
+          value: DEFAULT_SETTINGS[key] || ''
+        }));
+      }
+    } catch (error) {
+      console.error('Error getting settings by keys:', error);
+      throw error;
+    }
+  },
   
   /**
    * Update a batch of settings
@@ -161,15 +206,19 @@ export const settingsRepository = {
     try {
       const updatedSettings: SiteSettings = {};
       
+      console.log('Updating settings batch:', settings);
+      
       // Process settings sequentially without using transaction
       // This avoids potential transaction timeouts with many settings
       for (const [key, value] of Object.entries(settings)) {
+        console.log(`Updating setting ${key}:`, value);
         const setting = await prisma.siteSetting.upsert({
           where: { key },
           update: { value, updatedAt: new Date() },
           create: { key, value },
         });
         updatedSettings[key] = setting.value;
+        console.log(`Updated setting ${key}:`, setting);
       }
       
       return updatedSettings;
