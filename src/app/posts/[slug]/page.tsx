@@ -7,8 +7,8 @@ import { Button } from '@/components/Button';
 import ImageHandler from '@/components/ImageHandler';
 import { NewsletterForm } from '@/components/NewsletterForm';
 
-// For rendering markdown content
-import ReactMarkdown from 'react-markdown';
+// For rendering HTML content safely
+import DOMPurify from 'isomorphic-dompurify';
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: { params: { slug: string } }) {
@@ -207,9 +207,12 @@ export default async function Post({ params }: { params: { slug: string } }) {
       </div>
       
       {/* Post Content */}
-      <div className="prose dark:prose-dark max-w-none mb-12">
-        <ReactMarkdown>{post.content}</ReactMarkdown>
-      </div>
+      <div 
+        className="prose dark:prose-dark max-w-none mb-12"
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } }) 
+        }} 
+      />
       
       {/* Author Bio */}
       <div className="mb-16">

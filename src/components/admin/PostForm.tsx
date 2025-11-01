@@ -1,9 +1,19 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+
+const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[500px] w-full flex items-center justify-center bg-background border border-border rounded-md">
+      <div className="animate-pulse">Loading editor...</div>
+    </div>
+  ),
+});
 
 type Author = {
   id: string;
@@ -36,7 +46,7 @@ export default function PostForm({ post, authors, categories, tags, action }: Po
   const [error, setError] = useState<string | null>(null);
   
   // Initialize the form with post data if editing
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm({
     defaultValues: post ? {
       ...post,
       tags: post.tags?.map((t: any) => t.id) || [],
@@ -235,14 +245,21 @@ export default function PostForm({ post, authors, categories, tags, action }: Po
           
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1">
-              Content (Markdown)
+              Content
             </label>
-            <textarea
-              id="content"
-              rows={12}
-              {...register('content', { required: 'Content is required' })}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground font-mono"
-            />
+            <div className="border border-border rounded-md">
+              <Controller
+                name="content"
+                control={control}
+                rules={{ required: 'Content is required' }}
+                render={({ field: { onChange, value } }) => (
+                  <RichTextEditor
+                    value={value || ''}
+                    onChange={onChange}
+                  />
+                )}
+              />
+            </div>
             {errors.content && (
               <p className="mt-1 text-sm text-red-600">{errors.content.message?.toString()}</p>
             )}
