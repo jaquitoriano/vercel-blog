@@ -8,7 +8,7 @@ import ImageHandler from '@/components/ImageHandler';
 import { NewsletterForm } from '@/components/NewsletterForm';
 
 // For rendering HTML content safely
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: { params: { slug: string } }) {
@@ -210,7 +210,14 @@ export default async function Post({ params }: { params: { slug: string } }) {
       <div 
         className="prose dark:prose-dark max-w-none mb-12"
         dangerouslySetInnerHTML={{ 
-          __html: DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } }) 
+          __html: sanitizeHtml(post.content, {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+            allowedAttributes: {
+              ...sanitizeHtml.defaults.allowedAttributes,
+              '*': ['class'],
+              'img': ['src', 'alt', 'title']
+            }
+          })
         }} 
       />
       
