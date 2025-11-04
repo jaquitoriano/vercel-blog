@@ -1,13 +1,15 @@
 import Link from 'next/link';
-import { categories } from '@/data/categories';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/Card';
+import { categoryRepository } from '@/lib/repositories/category.repository';
 
 export const metadata = {
   title: 'Categories',
   description: 'Browse posts by category',
 };
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const categories = await categoryRepository.findAll();
+  
   return (
     <div className="content-standard">
       <header className="mb-10">
@@ -31,6 +33,9 @@ export default function CategoriesPage() {
               <CardContent>
                 <p className="text-muted-foreground">
                   {category.description || `Browse posts in the ${category.name} category`}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {category.postCount} {category.postCount === 1 ? 'post' : 'posts'}
                 </p>
               </CardContent>
               <CardFooter>
