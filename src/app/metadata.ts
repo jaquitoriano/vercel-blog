@@ -58,21 +58,5 @@ export async function generateMetadata(
       follow: true,
     },
     manifest: "/manifest.json",
-    // Provide common icons and theme colors for better platform integration
-    icons: {
-      icon: '/favicon.ico',
-      shortcut: '/favicon.ico',
-      apple: '/apple-touch-icon.png',
-    },
-    themeColor: [
-      { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-      { media: '(prefers-color-scheme: dark)', color: '#000000' },
-    ],
-    // Alternate URLs (canonical) and optional language alternates
-    alternates: {
-      canonical: baseUrl,
-    },
-    // Author/publisher information for rich results
-    authors: settings.site_author ? [{ name: settings.site_author }] : undefined,
   };
 }

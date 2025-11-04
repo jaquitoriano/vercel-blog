@@ -7,7 +7,7 @@ import AdminIndicator from "@/components/AdminIndicator";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { SettingsProvider } from "@/lib/contexts/SettingsContext";
 import { generateMetadata } from "./metadata";
-import StructuredData from './seo/StructuredData';
+import { settingsRepository } from '@/lib/repositories/settings.repository';
 
 // Export the dynamic metadata function
 export { generateMetadata };
@@ -32,13 +32,26 @@ export default async function RootLayout({
 }) {
   // Get current user status
   const userStatus = await getCurrentUser();
+  // Get Google Analytics ID from site settings (server-side)
+  const gaId = (await settingsRepository.getByKey('google_analytics_id')) || '';
   
   return (
     <html lang="en" className={`${inter.variable} ${serif.variable} scroll-smooth dark`}>
+      <head>
+        {gaId && gaId.trim() ? (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+            <script
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}', { page_path: window.location.pathname });`,
+              }}
+            />
+          </>
+        ) : null}
+      </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <SettingsProvider>
-          {/* JSON-LD structured data for WebSite / Organization */}
-          <StructuredData />
           <div className="flex flex-col min-h-screen bg-background text-foreground">
             <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 max-w-7xl">
               <Header />

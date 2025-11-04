@@ -16,8 +16,6 @@
     "create-admin": "node scripts/create-admin.js",
     "migrate-to-postgres": "node prisma/migrate-to-postgres.js",
     "seed-postgres": "node prisma/seed-postgres.js"
-    ,
-    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.0",
