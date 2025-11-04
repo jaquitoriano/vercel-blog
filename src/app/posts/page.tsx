@@ -18,7 +18,7 @@ export default async function Posts() {
       <header className="mb-10">
         <h1 className="text-4xl font-bold font-serif mb-4">All Posts</h1>
         <p className="text-xl text-muted-foreground">
-          Browse all our articles and tutorials on web development
+          Browse all our articles, blog posts and stories.
         </p>
       </header>
 
