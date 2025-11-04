@@ -2,9 +2,17 @@ import { prisma } from '@/lib/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { createCleanExcerpt } from '@/lib/utils/text';
 
+// This API handler works with runtime-dependent request data and Prisma
+// (server runtime). Mark it as force-dynamic so Next won't attempt to
+// statically render pages that call it during build.
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
+  // Use the standard URL API instead of `nextUrl` (edge-only) so this
+  // route is compatible with Node runtime and static generation checks.
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
     const query = searchParams.get('q');
     const page = parseInt(searchParams.get('page') || '1');
     const category = searchParams.get('category');
@@ -26,12 +34,12 @@ export async function GET(request: NextRequest) {
       AND: [
         {
           OR: [
-            { title: { contains: query, mode: 'insensitive' } },
-            { excerpt: { contains: query, mode: 'insensitive' } },
-            { content: { contains: query, mode: 'insensitive' } },
+            { title: { contains: query, mode: 'insensitive' as const } },
+            { excerpt: { contains: query, mode: 'insensitive' as const } },
+            { content: { contains: query, mode: 'insensitive' as const } },
           ],
         },
-        { status: 'PUBLISHED' },
+        { status: 'PUBLISHED' as const },
         // Add category filter if provided
         ...(category ? [{
           category: {
@@ -121,11 +129,17 @@ export async function GET(request: NextRequest) {
       totalPages
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
+    // Log full error to server logs for debugging
     console.error('Search error:', error);
-    return NextResponse.json(
-      { error: 'Failed to perform search' },
-      { status: 500 }
-    );
+
+    // In development, return detailed error message and stack to help debugging.
+    if (process.env.NODE_ENV !== 'production') {
+      const message = (error as Error)?.message ?? String(error);
+      const stack = (error as Error)?.stack ?? undefined;
+      return NextResponse.json({ error: 'Failed to perform search', message, stack }, { status: 500 });
+    }
+
+    return NextResponse.json({ error: 'Failed to perform search' }, { status: 500 });
   }
 }
