@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { createCleanExcerpt } from '@/lib/utils/text';
+import { cachePrismaQuery } from '@/lib/cache/prisma-cache';
 
 // This API handler works with runtime-dependent request data and Prisma
 // (server runtime). Mark it as force-dynamic so Next won't attempt to
@@ -59,28 +60,33 @@ export async function GET(request: NextRequest) {
       ]
     };
 
-    // Get total count for pagination
-    const total = await prisma.post.count({ where });
-    const totalPages = Math.ceil(total / perPage);
+    // Create cache key based on search parameters
+    const cacheKey = `search:${query}:${category}:${tag}:${sort}:${page}`;
 
-    // Get paginated results with proper sorting
-    const orderBy = (() => {
-      switch (sort) {
-        case 'date':
-          return { date: 'desc' as const };
-        case 'title':
-          return { title: 'asc' as const };
-        case 'relevance':
-        default:
-          // For relevance, we'll prioritize title matches then sort by date
-          return [
-            { title: 'desc' as const },
-            { date: 'desc' as const }
-          ];
-      }
-    })();
+    const results = await cachePrismaQuery(
+      cacheKey,
+      async () => {
+        const total = await prisma.post.count({ where });
+        const totalPages = Math.ceil(total / perPage);
 
-    const posts = await prisma.post.findMany({
+        // Get paginated results with proper sorting
+        const orderBy = (() => {
+          switch (sort) {
+            case 'date':
+              return { date: 'desc' as const };
+            case 'title':
+              return { title: 'asc' as const };
+            case 'relevance':
+            default:
+              // For relevance, we'll prioritize title matches then sort by date
+              return [
+                { title: 'desc' as const },
+                { date: 'desc' as const }
+              ];
+          }
+        })();
+
+        const posts = await prisma.post.findMany({
       where,
       skip: (page - 1) * perPage,
       take: perPage,
@@ -115,20 +121,23 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform posts to match frontend interface and clean content
-    const transformedPosts = posts.map(post => ({
-      ...post,
-      // Create clean content preview without HTML tags
-      content: createCleanExcerpt(post.content, 300),
-      tags: post.tags.map(t => t.tag)
-    }));
+        const transformedPosts = posts.map(post => ({
+          ...post,
+          // Create clean content preview without HTML tags
+          content: createCleanExcerpt(post.content, 300),
+          tags: post.tags.map(t => t.tag)
+        }));
 
-    return NextResponse.json({
-      posts: transformedPosts,
-      total,
-      page,
-      totalPages
-    });
+        return {
+          posts: transformedPosts,
+          total,
+          page,
+          totalPages
+        };
+      }
+    );
 
+    return NextResponse.json(results);
   } catch (error: unknown) {
     // Log full error to server logs for debugging
     console.error('Search error:', error);
