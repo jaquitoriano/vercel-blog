@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/Button';
 import ImageHandler from '@/components/ImageHandler';
 import { NewsletterForm } from '@/components/NewsletterForm';
+import ArticleStructuredData from '../../seo/ArticleStructuredData';
 
 // For rendering HTML content safely
 import sanitizeHtml from 'sanitize-html';
@@ -196,6 +197,8 @@ export default async function Post({ params }: { params: { slug: string } }) {
       </div>
       
       {/* Featured Image */}
+      {/* Article structured data for SEO / rich results */}
+      <ArticleStructuredData post={post} />
       <div className="mb-10 rounded-lg overflow-hidden">
         <ImageHandler 
           src={post.coverImage || ''}

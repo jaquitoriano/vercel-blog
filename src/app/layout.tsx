@@ -7,6 +7,7 @@ import AdminIndicator from "@/components/AdminIndicator";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { SettingsProvider } from "@/lib/contexts/SettingsContext";
 import { generateMetadata } from "./metadata";
+import StructuredData from './seo/StructuredData';
 
 // Export the dynamic metadata function
 export { generateMetadata };
@@ -36,6 +37,8 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${serif.variable} scroll-smooth dark`}>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <SettingsProvider>
+          {/* JSON-LD structured data for WebSite / Organization */}
+          <StructuredData />
           <div className="flex flex-col min-h-screen bg-background text-foreground">
             <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 max-w-7xl">
               <Header />
