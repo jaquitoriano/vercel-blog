@@ -34,6 +34,11 @@ export default async function RootLayout({
   const userStatus = await getCurrentUser();
   // Get Google Analytics ID from site settings (server-side)
   const gaId = (await settingsRepository.getByKey('google_analytics_id')) || '';
+  // Fetch a few site settings used for structured data and metadata
+  const siteTitle = (await settingsRepository.getByKey('site_title')) || '';
+  const siteDescription = (await settingsRepository.getByKey('meta_description')) || '';
+  const siteLogo = (await settingsRepository.getByKey('site_logo')) || '';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vercel-blog-template.vercel.app';
   
   return (
     <html lang="en" className={`${inter.variable} ${serif.variable} scroll-smooth dark`}>
@@ -49,6 +54,35 @@ export default async function RootLayout({
             />
           </>
         ) : null}
+        {/* JSON-LD structured data for SEO */}
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: siteTitle || undefined,
+              url: siteUrl,
+              description: siteDescription || undefined,
+              publisher: siteLogo
+                ? {
+                    "@type": "Organization",
+                    name: siteTitle || undefined,
+                    logo: {
+                      "@type": "ImageObject",
+                      url: siteLogo
+                    }
+                  }
+                : undefined,
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${siteUrl}/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen">
         <SettingsProvider>

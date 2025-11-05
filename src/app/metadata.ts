@@ -57,6 +57,21 @@ export async function generateMetadata(
       index: true,
       follow: true,
     },
+    // Provide icons so Next and browsers know where to find favicons.
+    // Use `site_favicon` from settings when available, otherwise fall back to the bundled SVG.
+    icons: (() => {
+      const rawFavicon = settings.site_favicon || '/favicon.svg';
+      // If user provided a relative path without leading slash, normalize it
+      const favicon = rawFavicon.startsWith('/') || rawFavicon.startsWith('http')
+        ? rawFavicon
+        : `/${rawFavicon}`;
+
+      return {
+        icon: favicon,
+        shortcut: favicon,
+        apple: favicon,
+      };
+    })(),
     manifest: "/manifest.json",
   };
 }
