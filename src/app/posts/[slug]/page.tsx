@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     return createInnerMetadata({
       title: `Preview: ${post.title}`,
       description: post.excerpt,
-      image: post.featuredImage,
+      image: post.coverImage,
       isPreview: true,
       isDraft: post.status === 'DRAFT'
     });
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return createInnerMetadata({
     title: post.title,
     description: post.excerpt,
-    image: post.featuredImage,
+    image: post.coverImage,
     isDraft: !isPublished
   });
 }

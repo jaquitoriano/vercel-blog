@@ -12,11 +12,24 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  type SiteSettings = {
+    meta_title?: string;
+    site_title?: string;
+    meta_description?: string;
+    meta_keywords?: string;
+    og_image?: string;
+    twitter_handle?: string;
+    site_favicon?: string;
+  };
+
   // Get settings from cache with fallback to database
-  let settings: Record<string, string> = {};
+  let settings: SiteSettings = {};
   try {
     const { getMetadataWithCache } = await import('@/lib/cache/metadata-cache');
-    settings = await getMetadataWithCache();
+    const metadata = await getMetadataWithCache();
+    if (metadata && typeof metadata === 'object') {
+      settings = metadata as SiteSettings;
+    }
   } catch (error) {
     console.error('Failed to load settings for metadata:', error);
     // Continue with empty settings - we'll use fallbacks
