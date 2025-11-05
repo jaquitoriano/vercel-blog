@@ -1,4 +1,37 @@
 /** @type {import('next').NextConfig} */
+const securityHeaders = [
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
+  {
+    key: 'X-DNS-Prefetch-Control',
+    value: 'on'
+  },
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload'
+  },
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+  {
+    key: 'X-Frame-Options',
+    value: 'DENY'
+  },
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff'
+  },
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+  {
+    key: 'Referrer-Policy',
+    value: 'origin-when-cross-origin'
+  },
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+  }
+];
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -10,6 +43,12 @@ const nextConfig = {
         pathname: '**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   // We'll keep error checking for production
   typescript: {
@@ -19,6 +58,16 @@ const nextConfig = {
   swcMinify: true,
   poweredByHeader: false,
   compress: true,
+  // Runtime optimizations
+  optimizeFonts: true,
+  productionBrowserSourceMaps: false,
+  httpAgentOptions: {
+    keepAlive: true,
+  },
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 5,
+  },
   experimental: {
     // Avoid issues with native Node modules
     serverComponentsExternalPackages: ['bcrypt', 'node-gyp-build']
@@ -41,6 +90,39 @@ const nextConfig = {
       node_gyp_build: false,
     };
     return config;
+  },
+  // Add security headers to all routes
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=60, s-maxage=60, stale-while-revalidate=3600',
+          },
+        ],
+      },
+    ];
   },
 };
 
