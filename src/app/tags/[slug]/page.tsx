@@ -7,21 +7,24 @@ import ImageHandler from '@/components/ImageHandler';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 
+import { createInnerMetadata } from '@/lib/utils/metadata';
+
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const tags = await getAllTags();
   const tag = tags.find(t => t.slug === params.slug);
   
   if (!tag) {
-    return {
+    return createInnerMetadata({
       title: 'Tag Not Found',
-      description: 'The requested tag could not be found'
-    };
+      description: 'The requested tag could not be found',
+      isError: true
+    });
   }
   
-  return {
+  return createInnerMetadata({
     title: `${tag.name} - Tag`,
     description: `Browse all posts tagged with ${tag.name}`
-  };
+  });
 }
 
 export default async function TagPage({ params }: { params: { slug: string } }) {

@@ -7,21 +7,25 @@ import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 
+import { createInnerMetadata } from '@/lib/utils/metadata';
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const authors = await getAllAuthors();
   const author = authors.find(a => a.id === params.id);
   
   if (!author) {
-    return {
+    return createInnerMetadata({
       title: 'Author Not Found',
-      description: 'The requested author could not be found'
-    };
+      description: 'The requested author could not be found',
+      isError: true
+    });
   }
   
-  return {
+  return createInnerMetadata({
     title: `${author.name} - Author`,
-    description: author.bio || `Browse posts by ${author.name}`
-  };
+    description: author.bio || `Browse posts by ${author.name}`,
+    image: author.avatar
+  });
 }
 
 export default async function AuthorPage({ params }: { params: { id: string } }) {

@@ -12,10 +12,11 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Get settings (with graceful error handling)
+  // Get settings from cache with fallback to database
   let settings: Record<string, string> = {};
   try {
-    settings = await settingsRepository.getAll();
+    const { getMetadataWithCache } = await import('@/lib/cache/metadata-cache');
+    settings = await getMetadataWithCache();
   } catch (error) {
     console.error('Failed to load settings for metadata:', error);
     // Continue with empty settings - we'll use fallbacks
@@ -58,20 +59,34 @@ export async function generateMetadata(
       follow: true,
     },
     // Provide icons so Next and browsers know where to find favicons.
-    // Use `site_favicon` from settings when available, otherwise fall back to the bundled SVG.
+    // Use `site_favicon` from settings when available
     icons: (() => {
-      const rawFavicon = settings.site_favicon || '/favicon.svg';
+      const rawFavicon = settings.site_favicon;
+      if (!rawFavicon) return null; // Let Next.js use default favicon
+
       // If user provided a relative path without leading slash, normalize it
       const favicon = rawFavicon.startsWith('/') || rawFavicon.startsWith('http')
         ? rawFavicon
         : `/${rawFavicon}`;
 
+      // Provide multiple sizes for better device support
       return {
-        icon: favicon,
+        icon: [
+          { url: favicon, sizes: '32x32' },
+          { url: favicon, sizes: '192x192' },
+          { url: favicon, sizes: '512x512' },
+        ],
         shortcut: favicon,
-        apple: favicon,
+        apple: [
+          { url: favicon, sizes: '180x180' },
+        ],
       };
     })(),
     manifest: "/manifest.json",
+    // Automatically update manifest.json icons with current favicon
+    other: {
+      'msapplication-TileImage': settings.site_favicon || '/favicon.svg',
+      'msapplication-TileColor': '#2563EB',
+    },
   };
 }

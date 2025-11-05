@@ -26,7 +26,7 @@ const DEFAULT_SETTINGS = {
   site_title: 'Ikira',
   site_description: 'A Next.js Ikira',
   site_logo: '/logo.png',
-  site_favicon: '/favicon.ico',
+  site_favicon: '/public/favicon.svg',
 
   // Welcome section settings
   welcome_heading: 'Welcome to Our Blog',

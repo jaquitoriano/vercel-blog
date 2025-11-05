@@ -71,6 +71,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
     setSuccess(null);
 
     try {
+      // Update settings in the database
       const response = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: {
@@ -82,6 +83,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to update settings');
+      }
+
+      // Update manifest.json with new favicon if it has changed
+      if (settings.site_favicon) {
+        await fetch('/api/admin/update-manifest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ favicon: settings.site_favicon }),
+        });
       }
 
       setSuccess('Settings updated successfully');

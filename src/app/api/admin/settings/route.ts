@@ -45,6 +45,12 @@ export async function PUT(req: NextRequest) {
     
     const data = await req.json();
     const settings = await settingsRepository.updateBatch(data);
+
+    // If favicon is being updated, update the manifest
+    if (data.site_favicon) {
+      const { updateManifestIcons } = await import('@/lib/utils/manifest-updater');
+      await updateManifestIcons(data.site_favicon);
+    }
     
     return NextResponse.json({ 
       success: true,

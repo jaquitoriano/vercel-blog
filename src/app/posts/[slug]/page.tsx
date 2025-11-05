@@ -11,28 +11,36 @@ import { NewsletterForm } from '@/components/NewsletterForm';
 import sanitizeHtml from 'sanitize-html';
 
 // Generate metadata for the page
+import { createInnerMetadata } from '@/lib/utils/metadata';
+
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPostBySlugWithRelations(params.slug);
   
   if (!post) {
-    return {
+    return createInnerMetadata({
       title: 'Post Not Found',
-      description: 'The requested post could not be found'
-    };
+      description: 'The requested post could not be found',
+      isError: true
+    });
   }
   
   if (post.status !== 'PUBLISHED') {
-    return {
+    return createInnerMetadata({
       title: `Preview: ${post.title}`,
       description: post.excerpt,
-      robots: 'noindex, nofollow'
-    };
+      image: post.featuredImage,
+      isPreview: true,
+      isDraft: post.status === 'DRAFT'
+    });
   }
   
-  return {
+  const isPublished = post.status === 'PUBLISHED';
+  return createInnerMetadata({
     title: post.title,
-    description: post.excerpt
-  };
+    description: post.excerpt,
+    image: post.featuredImage,
+    isDraft: !isPublished
+  });
 }
 
 import { auth } from '@/auth';

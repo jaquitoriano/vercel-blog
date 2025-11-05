@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   robots: 'noindex, nofollow', // Prevent all search engines from indexing and following links
   title: 'Admin Dashboard',
   description: 'Blog administration area',
+  icons: {
+    icon: '/admin-favicon.svg',
+    shortcut: '/admin-favicon.svg',
+    apple: '/admin-favicon.svg',
+  },
 };
 
 export default function AdminLayout({

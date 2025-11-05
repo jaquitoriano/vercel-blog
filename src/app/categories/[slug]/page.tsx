@@ -6,21 +6,24 @@ import ImageHandler from '@/components/ImageHandler';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 
+import { createInnerMetadata } from '@/lib/utils/metadata';
+
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const categories = await getAllCategories();
   const category = categories.find(cat => cat.slug === params.slug);
   
   if (!category) {
-    return {
+    return createInnerMetadata({
       title: 'Category Not Found',
-      description: 'The requested category could not be found'
-    };
+      description: 'The requested category could not be found',
+      isError: true
+    });
   }
   
-  return {
+  return createInnerMetadata({
     title: `${category.name} - Category`,
     description: category.description || `Browse all posts in the ${category.name} category`
-  };
+  });
 }
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {

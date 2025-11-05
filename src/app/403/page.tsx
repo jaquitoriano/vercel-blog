@@ -1,9 +1,12 @@
 import Link from 'next/link';
 
-export const metadata = {
+import { createInnerMetadata } from '@/lib/utils/metadata';
+
+export const generateMetadata = () => createInnerMetadata({
   title: 'Access Denied',
-  robots: 'noindex, nofollow'
-};
+  description: 'Access to this page is denied',
+  isError: true
+});
 
 export default function ForbiddenPage() {
   return (

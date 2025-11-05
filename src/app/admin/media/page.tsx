@@ -4,8 +4,7 @@ import { Metadata } from 'next';
 import MediaGalleryClient from './media-gallery-client';
 
 export const metadata: Metadata = {
-  title: 'Media Gallery - Admin Dashboard',
-  robots: 'noindex, nofollow',
+  title: 'Media Gallery - Admin Dashboard'
 };
 
 export default async function MediaGalleryPage() {
