@@ -60,34 +60,46 @@ export async function getRecentPostsWithRelations(limit: number = 5): Promise<Po
 /**
  * Get related posts based on tags
  */
-export async function getRelatedPosts(currentPostId: string, limit: number = 3): Promise<PostWithRelations[]> {
+export async function getRelatedPosts(
+  currentPostId: string,
+  limit: number = 3
+): Promise<PostWithRelations[]> {
   const allPosts = await pg.getAllPosts();
   const currentPost = allPosts.find(post => post.id === currentPostId);
-  
-  if (!currentPost || !currentPost.tags) return [];
-  
-  const currentPostTagIds = currentPost.tags.map(tag => tag.id);
-  
+
+  if (!currentPost || !currentPost.tags || currentPost.tags.length === 0) return [];
+
+  // Filter out null/undefined tags, then assert the type when mapping
+  const currentPostTagIds = currentPost.tags
+    .filter(tag => tag != null)              // removes null/undefined at runtime
+    .map(tag => (tag as Tag).id);            // assert safe for the compiler
+
   const relatedPosts = allPosts
     .filter(post => {
-      // Don't include the current post
       if (post.id === currentPostId) return false;
-      
-      // Check if posts share at least one tag
-      if (!post.tags) return false;
-      const postTagIds = post.tags.map(tag => tag.id);
+      if (!post.tags || post.tags.length === 0) return false;
+
+      const postTagIds = post.tags
+        .filter(tag => tag != null)
+        .map(tag => (tag as Tag).id);
+
       return postTagIds.some(tagId => currentPostTagIds.includes(tagId));
     })
     .sort((a, b) => {
-      // Sort by number of matching tags (descending)
       if (!a.tags || !b.tags) return 0;
-      
-      const aMatches = a.tags.filter(tag => currentPostTagIds.includes(tag.id)).length;
-      const bMatches = b.tags.filter(tag => currentPostTagIds.includes(tag.id)).length;
+
+      const aMatches = a.tags
+        .filter(tag => tag != null && currentPostTagIds.includes((tag as Tag).id))
+        .length;
+
+      const bMatches = b.tags
+        .filter(tag => tag != null && currentPostTagIds.includes((tag as Tag).id))
+        .length;
+
       return bMatches - aMatches;
     })
     .slice(0, limit);
-  
+
   return relatedPosts as unknown as PostWithRelations[];
 }
 

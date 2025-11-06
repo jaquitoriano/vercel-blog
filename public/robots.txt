@@ -9,4 +9,5 @@ Disallow: /403
 Host: https://ikira-blog.vercel.app
 
 # Sitemaps
+Sitemap: https://ikira-blog.vercel.app/sitemap.xml
 Sitemap: https://ikira-blog.vercel.app/server-sitemap.xml
