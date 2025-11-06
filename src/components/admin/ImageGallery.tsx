@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 interface GalleryImage {
@@ -25,7 +25,8 @@ export default function ImageGallery({
   const [deleteUrl, setDeleteUrl] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadImages = async () => {
+  const loadImages = useCallback(async () => {
+    let isMounted = true;
     try {
       setIsLoading(true);
       setError(null);
@@ -38,21 +39,40 @@ export default function ImageGallery({
       }
 
       const data = await response.json();
-      // Sort images by upload date, newest first
-      setImages(data.images.sort((a: GalleryImage, b: GalleryImage) => {
-        return new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime();
-      }));
+      // Only update state if component is still mounted
+      if (isMounted) {
+        // Sort images by upload date, newest first
+        setImages(data.images.sort((a: GalleryImage, b: GalleryImage) => {
+          return new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime();
+        }));
+      }
     } catch (err: any) {
-      console.error('Error fetching images:', err);
-      setError(err.message || 'Failed to fetch images');
+      if (isMounted) {
+        console.error('Error fetching images:', err);
+        setError(err.message || 'Failed to fetch images');
+      }
     } finally {
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, [folder]);
 
   useEffect(() => {
-    loadImages();
-  }, [folder]);
+    let mounted = true;
+    const load = async () => {
+      if (mounted) {
+        await loadImages();
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [loadImages]);
 
   const handleDeleteClick = (url: string) => {
     setDeleteUrl(url);

@@ -41,6 +41,10 @@ export async function generateMetadata(
   // Get base URL
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vercel-blog-template.vercel.app';
   
+  // Get the current path from params and build the canonical URL
+  const pathname = Object.values(params).join('/');
+  const canonicalUrl = new URL(pathname, baseUrl).toString();
+  
   return {
     metadataBase: new URL(baseUrl),
     title: {
@@ -70,6 +74,10 @@ export async function generateMetadata(
     robots: {
       index: true,
       follow: true,
+    },
+    // Add canonical URL
+    alternates: {
+      canonical: canonicalUrl,
     },
     // Provide icons so Next and browsers know where to find favicons.
     // Use `site_favicon` from settings when available

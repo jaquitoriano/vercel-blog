@@ -1,13 +1,12 @@
-# robots.txt for Ikira
+# *
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /api/admin/
-Disallow: /posts/*?preview=true
-Disallow: /posts/preview/
+Disallow: /admin
+Disallow: /api
+Disallow: /403
 
-# Allow access to published posts
-Allow: /posts/
+# Host
+Host: https://ikira-blog.vercel.app
 
-# Sitemap
-Sitemap: https://ikira-blog.vercel.app/sitemap.xml
+# Sitemaps
+Sitemap: https://ikira-blog.vercel.app/server-sitemap.xml

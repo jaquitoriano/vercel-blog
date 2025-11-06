@@ -12,6 +12,7 @@ import sanitizeHtml from 'sanitize-html';
 
 // Generate metadata for the page
 import { createInnerMetadata } from '@/lib/utils/metadata';
+import { generateArticleSchema } from '@/lib/utils/schema';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPostBySlugWithRelations(params.slug);
@@ -54,6 +55,20 @@ export default async function Post({ params }: { params: { slug: string } }) {
     notFound();
   }
 
+  // Generate Article Schema
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ikira-blog.vercel.app';
+  const articleSchema = generateArticleSchema({
+    title: post.title,
+    description: post.excerpt,
+    authorName: post.author.name,
+    authorUrl: `${baseUrl}/authors/${post.author.id}`,
+    publishedTime: new Date(post.date).toISOString(),
+    modifiedTime: new Date(post.updatedAt || post.date).toISOString(),
+    image: post.coverImage || `${baseUrl}/og-image.jpg`,
+    url: `${baseUrl}/posts/${post.slug}`,
+    tags: post.tags.map(tag => tag.name),
+  });
+
   // Check if post is not published and user is not admin
   if (post.status !== 'PUBLISHED' && session?.user?.role !== 'ADMIN') {
     redirect('/403');
@@ -69,6 +84,12 @@ export default async function Post({ params }: { params: { slug: string } }) {
   
   return (
     <div className="content-standard">
+      {/* Article Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      
       {/* Preview Banner */}
       {isPreview && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black px-4 py-2 text-center z-50">
