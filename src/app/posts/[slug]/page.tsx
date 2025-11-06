@@ -196,19 +196,46 @@ export default async function Post({ params }: { params: { slug: string } }) {
       </div>
       
       {/* Post Content */}
-      <div 
-        className="prose dark:prose-dark max-w-none mb-12"
-        dangerouslySetInnerHTML={{ 
-          __html: sanitizeHtml(post.content, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-            allowedAttributes: {
-              ...sanitizeHtml.defaults.allowedAttributes,
-              '*': ['class'],
-              'img': ['src', 'alt', 'title']
-            }
-          })
-        }} 
-      />
+      <article className="max-w-[85ch] mx-auto mb-12"> {/* Outer container for overall width */}
+        <div 
+          className="prose dark:prose-dark w-full mx-auto"
+          style={{ 'maxWidth': '100%' }}
+          dangerouslySetInnerHTML={{ 
+            __html: sanitizeHtml(post.content, {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'div']),
+              allowedAttributes: {
+                ...sanitizeHtml.defaults.allowedAttributes,
+                '*': ['class', 'style'],
+                'img': ['src', 'alt', 'title'],
+                'div': ['class', 'style'],
+                'p': ['class', 'style', 'align'],
+                'h1': ['class', 'style', 'align'],
+                'h2': ['class', 'style', 'align'],
+                'h3': ['class', 'style', 'align'],
+                'h4': ['class', 'style', 'align'],
+                'h5': ['class', 'style', 'align'],
+                'h6': ['class', 'style', 'align']
+              },
+              transformTags: {
+                '*': function(tagName, attribs) {
+                  // Preserve existing alignment and add centering for text content
+                  if (['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tagName)) {
+                    return {
+                      tagName,
+                      attribs: {
+                        ...attribs,
+                        class: `${attribs.class || ''} mx-auto`,
+                        style: `${attribs.style || ''} max-width: 72ch; margin-left: auto; margin-right: auto;`
+                      }
+                    };
+                  }
+                  return { tagName, attribs };
+                }
+              }
+            })
+          }} 
+        />
+      </article>
       
       {/* Author Bio */}
       <div className="mb-16">

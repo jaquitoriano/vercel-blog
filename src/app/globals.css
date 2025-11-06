@@ -375,6 +375,35 @@ html {
     margin-right: auto;
     max-width: 72ch;
   }
+
+  /* Post content styling */
+  .prose {
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Allow centered content to respect original alignment */
+  .prose > :is(p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Preserve full-width for media while respecting center alignment */
+  .prose > :is(p, div):has(img) {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .prose img {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Override max-width constraints for images */
+  .prose :is(p, div) > img {
+    max-width: 100%;
+    height: auto;
+  }
   
   .content-narrow {
     margin-left: auto;
