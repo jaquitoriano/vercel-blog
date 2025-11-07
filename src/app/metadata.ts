@@ -82,9 +82,8 @@ export async function generateMetadata(
     // Provide icons so Next and browsers know where to find favicons.
     // Use `site_favicon` from settings when available
     icons: (() => {
-      const rawFavicon = settings.site_favicon;
-      if (!rawFavicon) return null; // Let Next.js use default favicon
-
+      const rawFavicon = settings.site_favicon || '/images/fallbacks/favicon.svg';
+      
       // If user provided a relative path without leading slash, normalize it
       const favicon = rawFavicon.startsWith('/') || rawFavicon.startsWith('http')
         ? rawFavicon
