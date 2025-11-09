@@ -27,7 +27,12 @@ export async function GET(req: NextRequest) {
     const { listBlobImages } = await import('@/lib/blob/blob-client');
     const images = await listBlobImages(folder);
     
-    return NextResponse.json({ images });
+    return NextResponse.json({ images }, {
+      headers: {
+        'Cache-Control': 'no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
+    });
   } catch (error: any) {
     console.error('Error listing uploads:', error);
     return NextResponse.json(
@@ -56,18 +61,28 @@ export async function POST(req: NextRequest) {
     }
     
     const formData = await req.formData();
-    const file = formData.get('file') as File | null;
+    const file = formData.get('file');
     const folder = formData.get('folder') as string || 'uploads';
     
-    if (!file) {
+    if (!file || typeof file === 'string') {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'No valid file provided' },
         { status: 400 }
       );
     }
+
+    // Ensure we have a valid Blob-like object
+    if (!('arrayBuffer' in file) || typeof file.arrayBuffer !== 'function') {
+      return NextResponse.json(
+        { error: 'Invalid file format' },
+        { status: 400 }
+      );
+    }
+
+    const filename = 'name' in file ? file.name : `upload-${Date.now()}`;
     
     // Upload the file to Vercel Blob
-    const result = await uploadToBlob(file, file.name, folder);
+    const result = await uploadToBlob(file, filename, folder);
     
     return NextResponse.json({ 
       success: true, 

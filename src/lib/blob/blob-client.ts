@@ -29,10 +29,10 @@ const STORE_ID = process.env.NEXT_PUBLIC_STORE_ID;
 
 // Helper function to upload a file to Vercel Blob
 export async function uploadToBlob(
-  file: File | Blob,
+  file: any,
   filename: string,
   folder: string = 'uploads'
-): Promise<{ url: string, type?: string }> {
+): Promise<{ url: string, type?: string, pathname?: string }> {
   try {
     // Get token at runtime
     const token = getToken();
@@ -43,6 +43,11 @@ export async function uploadToBlob(
         url: `https://placehold.co/600x400?text=Blob+Storage+Not+Configured`,
         type: 'image/png'
       };
+    }
+
+    // Validate that file is either a Blob or File object
+    if (!(file instanceof Blob) && !(typeof file === 'object' && 'arrayBuffer' in file)) {
+      throw new Error('Invalid file type provided. Expected Blob or File-like object');
     }
 
     // Generate a unique filename with timestamp
@@ -66,9 +71,13 @@ export async function uploadToBlob(
     
     console.log('[DEBUG] Successfully uploaded to Vercel Blob:', url);
     
+    // Safely get the file type if available
+    const fileType = file && typeof file === 'object' && 'type' in file ? file.type : undefined;
+    
     return {
       url,
-      type: file instanceof File ? file.type : undefined
+      type: fileType,
+      pathname: path
     };
   } catch (error) {
     console.error('Error uploading to Vercel Blob:', error);

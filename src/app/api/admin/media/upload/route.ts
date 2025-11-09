@@ -22,32 +22,57 @@ export async function POST(req: NextRequest) {
     }
     
     const formData = await req.formData();
-    const file = formData.get('file') as File | null;
+    const file = formData.get('file');
     const filename = formData.get('filename') as string || '';
     const folder = formData.get('folder') as string || 'uploads';
     
-    if (!file) {
+    if (!file || typeof file === 'string') {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'No valid file provided' },
         { status: 400 }
       );
     }
+
+    // Ensure we have a valid Blob-like object
+    if (!('arrayBuffer' in file) || typeof file.arrayBuffer !== 'function') {
+      return NextResponse.json(
+        { error: 'Invalid file format' },
+        { status: 400 }
+      );
+    }
+
+    const fileSize = 'size' in file ? file.size : undefined;
+    const fileType = 'type' in file ? file.type : undefined;
+    const fileName = 'name' in file ? file.name : `upload-${Date.now()}`;
     
     console.log('Uploading file to blob storage:', {
-      filename: filename || file.name,
+      filename: filename || fileName,
       folder,
-      size: file.size,
-      type: file.type
+      size: fileSize,
+      type: fileType
     });
     
+    // Generate a unique filename with timestamp
+    const timestamp = new Date().getTime();
+    const finalFilename = filename || fileName;
+    const uniqueFilename = `${timestamp}-${finalFilename}`;
+    
     // Upload the file to Vercel Blob
-    const result = await uploadToBlob(file, filename || file.name, folder);
+    const result = await uploadToBlob(file, uniqueFilename, folder);
     
     return NextResponse.json({ 
       success: true, 
       url: result.url,
       type: result.type,
+      pathname: `${folder}/${uniqueFilename}`,
+      uploadedAt: new Date().toISOString(),
+      size: fileSize || 0,
       message: 'File uploaded successfully'
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
     });
   } catch (error: any) {
     console.error('Error uploading file:', error);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { uploadToBlob } from '@/lib/blob/blob-client';
 
@@ -27,76 +27,98 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [blobConfigured, setBlobConfigured] = useState(true);
-  
-  // Check blob configuration and fetch images on component mount
-  useEffect(() => {
-    // Check blob configuration via API endpoint
-    const checkBlobConfig = async () => {
-      try {
-        const response = await fetch('/api/admin/blob-config');
-        if (!response.ok) {
-          throw new Error('Failed to check blob configuration');
-        }
-        
-        const data = await response.json();
-        setBlobConfigured(data.isConfigured);
-        
-        if (!data.isConfigured) {
-          let errorMessage = 'Image upload functionality is not available';
-          if (!data.hasToken) errorMessage += ': BLOB_READ_WRITE_TOKEN environment variable is not set';
-          if (!data.hasStoreId) errorMessage += (data.hasToken ? ' and ' : ': ') + 'NEXT_PUBLIC_STORE_ID environment variable is not set';
-          
-          setError(errorMessage);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Only fetch images if blob is properly configured
-        fetchImages();
-      } catch (err: any) {
-        console.error('Error checking blob configuration:', err);
-        setBlobConfigured(false);
-        setError('Failed to check image upload configuration: ' + (err.message || 'Unknown error'));
-        setIsLoading(false);
-      }
-    };
-    
-    checkBlobConfig();
-  }, []);
-  
-  // Function to fetch images from the API
-  const fetchImages = async () => {
+  const [lastUpdateTime, setLastUpdateTime] = useState<number>(Date.now());
+
+  const fetchImages = useCallback(async (forceUpdate = false) => {
     try {
+      console.log('[MediaGallery] Fetching images in', selectMode ? 'select mode' : 'normal mode');
+      
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch('/api/admin/uploads');
+      const response = await fetch('/api/admin/uploads', {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        credentials: 'include'
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch images');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      setImages(data.images || []);
+      console.log('[MediaGallery] API Response:', data);
+      
+      if (!data || !Array.isArray(data.images)) {
+        throw new Error('Invalid data format from server');
+      }
+      
+      const sortedImages = data.images.sort((a, b) => 
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+      );
+      
+      setImages(sortedImages);
     } catch (err: any) {
-      setError(err.message || 'An error occurred while fetching images');
+      console.error('[MediaGallery] Error:', err);
+      setError(err.message || 'Failed to load images');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectMode]);
   
-  // Handle file selection
+  useEffect(() => {
+    const loadImages = async () => {
+      if (selectMode) {
+        await fetchImages(true);
+      } else {
+        try {
+          const response = await fetch('/api/admin/blob-config', {
+            credentials: 'include'
+          });
+          if (!response.ok) {
+            throw new Error('Failed to check blob configuration');
+          }
+          
+          const data = await response.json();
+          setBlobConfigured(data.isConfigured);
+          
+          if (!data.isConfigured) {
+            let errorMessage = 'Image upload functionality is not available';
+            if (!data.hasToken) errorMessage += ': BLOB_READ_WRITE_TOKEN environment variable is not set';
+            if (!data.hasStoreId) errorMessage += (data.hasToken ? ' and ' : ': ') + 'NEXT_PUBLIC_STORE_ID environment variable is not set';
+            
+            setError(errorMessage);
+            setIsLoading(false);
+            return;
+          }
+          
+          await fetchImages();
+        } catch (err: any) {
+          console.error('Error checking blob configuration:', err);
+          setBlobConfigured(false);
+          setError('Failed to check image upload configuration: ' + (err.message || 'Unknown error'));
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    loadImages();
+  }, [selectMode, lastUpdateTime, fetchImages]);
+  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
     await uploadFiles(Array.from(files));
     
-    // Reset the input value so the same file can be selected again
     e.target.value = '';
   };
   
-  // Handle file drop
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -107,9 +129,7 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
     }
   };
   
-  // Upload files to the server using API route
   const uploadFiles = async (files: File[]) => {
-    // Check blob config before proceeding
     if (!blobConfigured) {
       setError('Image upload is not available: Vercel Blob is not properly configured');
       return;
@@ -117,16 +137,15 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
     
     setIsUploading(true);
     setUploadProgress(0);
+    let uploadSuccessful = false;
     
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Check if file type is accepted
         const acceptedTypes = acceptTypes.split(',').map(type => type.trim());
         const isAccepted = acceptedTypes.some(type => {
           if (type.endsWith('/*')) {
-            // Handle wildcard mime types (e.g., 'image/*')
             const baseType = type.split('/')[0];
             return file.type.startsWith(`${baseType}/`);
           }
@@ -138,16 +157,15 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
           continue;
         }
         
-        // Create form data for the API request
         const formData = new FormData();
         formData.append('file', file);
         formData.append('filename', file.name);
         formData.append('folder', 'uploads');
         
-        // Upload the file using the API endpoint
         const response = await fetch('/api/admin/media/upload', {
           method: 'POST',
           body: formData,
+          credentials: 'include'
         });
         
         if (!response.ok) {
@@ -155,12 +173,13 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
           throw new Error(errorData.error || 'Failed to upload file');
         }
         
-        // Update progress
         setUploadProgress(Math.round(((i + 1) / files.length) * 100));
+        uploadSuccessful = true;
       }
       
-      // Refresh the image list
-      fetchImages();
+      if (uploadSuccessful) {
+        setLastUpdateTime(Date.now());
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred while uploading');
     } finally {
@@ -168,7 +187,6 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
     }
   };
   
-  // Handle drag events
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -180,14 +198,12 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
     }
   };
   
-  // Handle image selection
   const handleImageSelect = (url: string) => {
     if (onSelect) {
       onSelect(url);
     }
   };
   
-  // Filter images based on search term
   const filteredImages = searchTerm 
     ? images.filter(image => image.pathname.toLowerCase().includes(searchTerm.toLowerCase()))
     : images;
@@ -255,7 +271,6 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
         </div>
       </div>
 
-      {/* Search bar */}
       <div className="relative">
         <input
           type="text"
@@ -271,7 +286,6 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
         </div>
       </div>
       
-      {/* Image gallery */}
       <div>
         <h3 className="font-medium mb-4">Media Gallery</h3>
         
@@ -327,6 +341,7 @@ export default function MediaGallery({ onSelect, selectMode = false, acceptTypes
                               try {
                                 const response = await fetch(`/api/admin/uploads?url=${encodeURIComponent(image.url)}`, {
                                   method: 'DELETE',
+                                  credentials: 'include'
                                 });
                                 if (response.ok) {
                                   fetchImages();
