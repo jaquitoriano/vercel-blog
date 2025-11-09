@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { settingsRepository } from '@/lib/repositories/settings.repository';
+import { getSettingsWithCache, invalidateSettingsCache } from '@/lib/cache/settings-cache';
 
 // GET /api/admin/settings - Get all settings
 export async function GET(req: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Forbidden - Admin privileges required' }, { status: 403 });
     }
     
-    const settings = await settingsRepository.getAll();
+    const settings = await getSettingsWithCache();
     return NextResponse.json({ settings });
   } catch (error: any) {
     console.error('Error fetching settings:', error);
@@ -52,6 +53,9 @@ export async function PUT(req: NextRequest) {
       await updateManifestIcons(data.site_favicon);
     }
     
+    // Invalidate the settings cache
+    await invalidateSettingsCache();
+    
     return NextResponse.json({ 
       success: true,
       message: 'Settings updated successfully',
@@ -85,6 +89,10 @@ export async function POST(req: NextRequest) {
     
     if (action === 'reset') {
       const settings = await settingsRepository.resetToDefaults();
+      
+      // Invalidate the settings cache
+      await invalidateSettingsCache();
+      
       return NextResponse.json({ 
         success: true, 
         message: 'Settings reset to defaults',

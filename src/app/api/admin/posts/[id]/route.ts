@@ -127,6 +127,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     // Update the post
     const updatedPost = await postRepository.update(params.id, updateData);
     
+    // Invalidate caches
+    const { invalidateAllPublicCache } = await import('@/lib/cache/invalidate-cache');
+    await invalidateAllPublicCache();
+    
     return NextResponse.json({ post: updatedPost });
   } catch (error: any) {
     console.error(`Error updating post ${params.id}:`, error);
@@ -186,6 +190,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     
     // Delete the post
     await postRepository.delete(params.id);
+
+    // Invalidate caches
+    const { invalidateAllPublicCache } = await import('@/lib/cache/invalidate-cache');
+    await invalidateAllPublicCache();
     
     return NextResponse.json({ success: true });
   } catch (error: any) {

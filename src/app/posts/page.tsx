@@ -1,17 +1,19 @@
 import Link from 'next/link';
-import { getAllPostsWithRelations } from '@/lib/postgresData';
+import { getAllPostsWithCache } from '@/lib/cache/posts-cache';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 
-export const metadata = {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
   title: 'All Posts',
   description: 'Browse all our blog posts and articles',
 };
 
 export default async function Posts() {
-  const allPosts = await getAllPostsWithRelations();
+  const allPosts = await getAllPostsWithCache();
   
   return (
     <div className="content-wide">
@@ -50,7 +52,7 @@ export default async function Posts() {
                 <div className="flex items-center gap-3 mt-3">
                   <div className="w-6 h-6 rounded-full overflow-hidden">
                     <ImageHandler 
-                      src={post.author.avatar}
+                      src={post.author.avatar || `/images/fallbacks/default-avatar.png`}
                       alt={post.author.name}
                       className="w-full h-full object-cover"
                       isAvatar={true}

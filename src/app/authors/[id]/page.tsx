@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostsByAuthor, getAllAuthors } from '@/lib/postgresData';
-import { authors, getAuthorById } from '@/data/authors';
+import { getAuthorByIdWithCache, getAllAuthorsWithCache } from '@/lib/cache/authors-cache';
+import { getPostsByAuthor } from '@/lib/postgresData';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
@@ -10,8 +10,7 @@ import ImageHandler from '@/components/ImageHandler';
 import { createInnerMetadata } from '@/lib/utils/metadata';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const authors = await getAllAuthors();
-  const author = authors.find(a => a.id === params.id);
+  const author = await getAuthorByIdWithCache(params.id);
   
   if (!author) {
     return createInnerMetadata({
@@ -24,13 +23,12 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   return createInnerMetadata({
     title: `${author.name} - Author`,
     description: author.bio || `Browse posts by ${author.name}`,
-    image: author.avatar
+    image: author.avatar || undefined
   });
 }
 
 export default async function AuthorPage({ params }: { params: { id: string } }) {
-  const authors = await getAllAuthors();
-  const author = authors.find(a => a.id === params.id);
+  const author = await getAuthorByIdWithCache(params.id);
   
   if (!author) {
     notFound();
@@ -66,7 +64,7 @@ export default async function AuthorPage({ params }: { params: { id: string } })
         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
                     <div className="w-32 h-32 rounded-full overflow-hidden">
                       <ImageHandler 
-                        src={author.avatar}
+                        src={author.avatar || ''}
                         alt={author.name}
                         className="w-full h-full object-cover"
                         isAvatar={true}

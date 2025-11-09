@@ -2,17 +2,16 @@ import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 import HeroSection from '@/components/HeroSection';
-import { getFeaturedPostsWithRelations, getRecentPostsWithRelations } from '@/lib/postgresData';
 import { formatDate } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
-
 import { settingsRepository } from '@/lib/repositories/settings.repository';
+import { getFeaturedPostsWithCache, getRecentPostsWithCache } from '@/lib/cache/homepage-cache';
 
 export default async function Home() {
-  // Get data from PostgreSQL database
-  const featuredPosts = await getFeaturedPostsWithRelations();
+  // Get data from cache (falls back to PostgreSQL database)
+  const featuredPosts = await getFeaturedPostsWithCache();
   const featuredPost = featuredPosts[0]; // Get the first featured post
-  const recentPosts = await getRecentPostsWithRelations(3);
+  const recentPosts = await getRecentPostsWithCache(3);
   const settings = await settingsRepository.getAll();
   return (
     <main className="relative">
@@ -73,7 +72,7 @@ export default async function Home() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                   <ImageHandler 
-                    src={featuredPost.author.avatar} 
+                    src={featuredPost.author.avatar || ''} 
                     alt={featuredPost.author.name}
                     className="w-full h-full object-cover"
                     isAvatar={true}
@@ -150,7 +149,7 @@ export default async function Home() {
                 <div className="flex items-center gap-2 mb-2 text-sm">
                   <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                     <ImageHandler 
-                      src={post.author.avatar} 
+                      src={post.author.avatar || ''} 
                       alt={post.author.name}
                       className="w-full h-full object-cover"
                       isAvatar={true}

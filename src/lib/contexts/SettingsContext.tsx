@@ -7,6 +7,7 @@ interface SettingsContextType {
   isLoading: boolean;
   error: string | null;
   getSetting: (key: string, defaultValue?: string) => string;
+  refreshSettings: () => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -14,6 +15,7 @@ const SettingsContext = createContext<SettingsContextType>({
   isLoading: true,
   error: null,
   getSetting: (key, defaultValue = '') => defaultValue,
+  refreshSettings: async () => {},
 });
 
 export const useSettings = () => useContext(SettingsContext);
@@ -23,27 +25,35 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchSettings() {
-      try {
-        setIsLoading(true);
-        const response = await fetch('/api/settings');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch settings');
+  const fetchSettings = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/settings', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
-        
-        const data = await response.json();
-        setSettings(data.settings);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        console.error('Error fetching settings:', err);
-      } finally {
-        setIsLoading(false);
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch settings');
       }
+      
+      const data = await response.json();
+      setSettings(data.settings);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      console.error('Error fetching settings:', err);
+    } finally {
+      setIsLoading(false);
     }
-    
+  };
+
+  // Initial fetch on mount
+  useEffect(() => {
     fetchSettings();
   }, []);
 
@@ -51,8 +61,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return settings[key] !== undefined ? settings[key] : defaultValue;
   };
 
+  const refreshSettings = async () => {
+    await fetchSettings();
+  };
+
   return (
-    <SettingsContext.Provider value={{ settings, isLoading, error, getSetting }}>
+    <SettingsContext.Provider value={{ settings, isLoading, error, getSetting, refreshSettings }}>
       {children}
     </SettingsContext.Provider>
   );

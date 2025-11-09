@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test:cache": "tsx scripts/test-cache.ts",
     "vercel-build": "node scripts/load-env.js && node scripts/vercel-env-check.js && next build && next-sitemap",
     "deploy": "vercel --prod",
     "seed": "tsx scripts/seed-database.ts",

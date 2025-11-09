@@ -1,26 +1,20 @@
 import Link from 'next/link';
-import { authors } from '@/data/authors';
-import { getPostsByAuthor, getAllAuthors } from '@/lib/postgresData';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
+import { getAllAuthorsWithCache } from '@/lib/cache/authors-cache';
 
-export const metadata = {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
   title: 'Authors',
   description: 'Meet our team of writers and contributors',
 };
 
 export default async function AuthorsPage() {
-  // Get all authors from database
-  const authors = await getAllAuthors();
+  // Get all authors from cache (falls back to database)
+  const authors = await getAllAuthorsWithCache();
   
-  // Get post counts for each author
-  const authorsWithPostCount = await Promise.all(authors.map(async (author) => {
-    const posts = await getPostsByAuthor(author.id);
-    return {
-      ...author,
-      postCount: posts.length
-    };
-  }));
+  // Authors already include post counts from the repository layer
 
   return (
     <div className="content-standard">
@@ -32,12 +26,12 @@ export default async function AuthorsPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {authorsWithPostCount.map((author) => (
+        {authors.map((author) => (
           <Card key={author.id} hover className="flex flex-col">
             <CardHeader className="text-center">
               <div className="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4">
                 <ImageHandler 
-                  src={author.avatar}
+                  src={author.avatar || ''}
                   alt={author.name}
                   className="w-full h-full object-cover"
                   isAvatar={true}
