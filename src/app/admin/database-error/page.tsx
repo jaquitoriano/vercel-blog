@@ -19,7 +19,7 @@ export default function SetupInstructions() {
         </div>
         
         <div className="prose max-w-none">
-          <p className="text-red-600 font-semibold">Error: Environment variable not found: POSTGRES_URL</p>
+          <p className="text-red-600 font-semibold">Database configuration is incomplete: DATABASE_URL or DIRECT_URL is missing</p>
           
           <p className="mt-4">
             The admin interface requires a PostgreSQL database connection to function properly. 
@@ -33,8 +33,8 @@ export default function SetupInstructions() {
               Create a <code className="bg-gray-100 px-1 py-0.5 rounded">.env.local</code> file in the root of your project
               (or update your existing one) with the following variables:
               <pre className="bg-gray-100 p-3 rounded mt-2 overflow-x-auto">
-                POSTGRES_URL="your_postgres_connection_string"<br/>
-                POSTGRES_URL_NON_POOLING="your_postgres_direct_connection_string"<br/>
+                DATABASE_URL="your_supabase_pooled_connection_string"<br/>
+                DIRECT_URL="your_supabase_direct_connection_string"<br/>
                 NEXTAUTH_URL="http://localhost:3000"<br/>
                 NEXTAUTH_SECRET="some_random_string"
               </pre>

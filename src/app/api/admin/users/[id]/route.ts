@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Forbidden - Admin privileges required' }, { status: 403 });
     }
     
-    const { name, email, password, role } = await request.json();
+    const { name, email, password, oldPassword, confirmPassword, role } = await request.json();
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -110,8 +110,35 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       role,
     };
     
-    // Only update password if provided
+    // Password changes require the current password and confirmation.
     if (password) {
+      if (!oldPassword) {
+        return NextResponse.json(
+          { success: false, message: 'Old password is required' },
+          { status: 400 }
+        );
+      }
+      if (!confirmPassword || password !== confirmPassword) {
+        return NextResponse.json(
+          { success: false, message: 'New passwords do not match' },
+          { status: 400 }
+        );
+      }
+      if (password.length < 6) {
+        return NextResponse.json(
+          { success: false, message: 'New password must be at least 6 characters' },
+          { status: 400 }
+        );
+      }
+
+      const oldPasswordMatches = await bcryptjs.compare(oldPassword, existingUser.password);
+      if (!oldPasswordMatches) {
+        return NextResponse.json(
+          { success: false, message: 'Old password is incorrect' },
+          { status: 400 }
+        );
+      }
+
       updateData.password = await bcryptjs.hash(password, 10);
     }
     

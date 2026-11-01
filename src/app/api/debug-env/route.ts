@@ -27,11 +27,8 @@ export async function GET(request: Request) {
     platform: process.env.VERCEL ? 'vercel' : 'unknown',
     region: process.env.VERCEL_REGION || 'unknown',
     database: {
-      hasUrl: !!process.env.POSTGRES_URL,
-      hasPrismaUrl: !!process.env.POSTGRES_PRISMA_URL,
-      hasNonPoolingUrl: !!process.env.POSTGRES_URL_NON_POOLING,
-      hasUser: !!process.env.POSTGRES_USER,
-      hasPassword: !!process.env.POSTGRES_PASSWORD,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      hasDirectUrl: !!process.env.DIRECT_URL,
     },
     blob: {
       hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,

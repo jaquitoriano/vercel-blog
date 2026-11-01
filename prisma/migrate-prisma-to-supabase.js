@@ -5,14 +5,18 @@ const path = require('path');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 
-const envPath = path.resolve(process.cwd(), '.env');
-const env = dotenv.parse(fs.readFileSync(envPath));
-const sourceUrl = env.PRISMA_SOURCE_DATABASE_URL || env.DATABASE_URL;
-const destinationUrl = env.POSTGRES_SUPABASE_POSTGRES_URL_NON_POOLING;
+const env = {
+  ...dotenv.parse(fs.readFileSync(path.resolve(process.cwd(), '.env'))),
+  ...(fs.existsSync(path.resolve(process.cwd(), '.env.local'))
+    ? dotenv.parse(fs.readFileSync(path.resolve(process.cwd(), '.env.local')))
+    : {}),
+};
+const sourceUrl = env.PRISMA_SOURCE_DATABASE_URL;
+const destinationUrl = env.DIRECT_URL;
 
 if (!sourceUrl) throw new Error('Missing PRISMA_SOURCE_DATABASE_URL for the Prisma source database');
 if (!destinationUrl) {
-  throw new Error('Missing POSTGRES_SUPABASE_POSTGRES_URL_NON_POOLING for the Supabase destination');
+  throw new Error('Missing DIRECT_URL for the Supabase destination');
 }
 
 const source = new PrismaClient({

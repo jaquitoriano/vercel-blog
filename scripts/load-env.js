@@ -75,21 +75,20 @@ function main() {
   }
   
   // Validate critical environment variables
-  const requiredDatabaseVars = ['POSTGRES_URL', 'POSTGRES_PRISMA_URL', 'DATABASE_URL'];
-  const hasDatabaseVar = requiredDatabaseVars.some(varName => !!process.env[varName]);
-  
-  if (!hasDatabaseVar) {
-    console.warn('⚠️ No database connection variables found!');
-    console.warn('Required one of:', requiredDatabaseVars.join(', '));
+  const hasRuntimeDatabaseUrl = !!process.env.DATABASE_URL;
+  const hasDirectDatabaseUrl = !!process.env.DIRECT_URL;
+
+  if (!hasRuntimeDatabaseUrl || !hasDirectDatabaseUrl) {
+    console.warn('⚠️ Database connection variables are incomplete!');
+    console.warn('Required: DATABASE_URL and DIRECT_URL');
   } else {
     console.log('✅ Database connection variables loaded');
   }
-  
+
   // Output all loaded environment variables
   console.log('\nLoaded environment variables:');
-  console.log('- Database URL:', process.env.POSTGRES_URL ? '✅ Set' : '❌ Not set');
-  console.log('- Prisma URL:', process.env.POSTGRES_PRISMA_URL ? '✅ Set' : '❌ Not set');
-  console.log('- Fallback URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ Not set');
+  console.log('- Runtime database URL:', hasRuntimeDatabaseUrl ? '✅ Set' : '❌ Not set');
+  console.log('- Direct database URL:', hasDirectDatabaseUrl ? '✅ Set' : '❌ Not set');
   console.log('- Blob token:', process.env.BLOB_READ_WRITE_TOKEN ? '✅ Set' : '❌ Not set');
   console.log('- Store ID:', process.env.NEXT_PUBLIC_STORE_ID ? '✅ Set' : '❌ Not set');
   console.log('- Site URL:', process.env.NEXT_PUBLIC_SITE_URL || 'Not set');

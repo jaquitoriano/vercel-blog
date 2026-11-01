@@ -18,6 +18,7 @@ export default function UserForm({ user, mode }: UserFormProps) {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    oldPassword: '',
     password: '',
     confirmPassword: '',
     role: user?.role || 'USER',
@@ -66,12 +67,16 @@ export default function UserForm({ user, mode }: UserFormProps) {
       }
     } else {
       // In edit mode, password is optional but must be valid if provided
-      if (formData.password && formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 characters';
-      }
-      
-      if (formData.password && formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Passwords do not match';
+      if (formData.password) {
+        if (!formData.oldPassword) {
+          newErrors.oldPassword = 'Old password is required';
+        }
+        if (formData.password.length < 6) {
+          newErrors.password = 'Password must be at least 6 characters';
+        }
+        if (formData.password !== formData.confirmPassword) {
+          newErrors.confirmPassword = 'Passwords do not match';
+        }
       }
     }
     
@@ -99,7 +104,11 @@ export default function UserForm({ user, mode }: UserFormProps) {
         name: formData.name,
         email: formData.email,
         role: formData.role,
-        ...(formData.password && { password: formData.password }),
+        ...(formData.password && {
+          password: formData.password,
+          oldPassword: formData.oldPassword,
+          confirmPassword: formData.confirmPassword,
+        }),
       };
       
       const response = await fetch(endpoint, {
@@ -170,6 +179,27 @@ export default function UserForm({ user, mode }: UserFormProps) {
         )}
       </div>
       
+      {mode === 'edit' && (
+        <div className="mb-4">
+          <label htmlFor="oldPassword" className="block text-sm font-medium mb-1">
+            Old Password
+          </label>
+          <input
+            type="password"
+            id="oldPassword"
+            name="oldPassword"
+            value={formData.oldPassword}
+            onChange={handleChange}
+            className={`w-full p-2 border ${
+              errors.oldPassword ? 'border-red-500' : 'border-border'
+            } rounded focus:outline-none focus:ring-2 focus:ring-primary`}
+          />
+          {errors.oldPassword && (
+            <p className="mt-1 text-sm text-red-500">{errors.oldPassword}</p>
+          )}
+        </div>
+      )}
+
       <div className="mb-4">
         <label htmlFor="password" className="block text-sm font-medium mb-1">
           {mode === 'edit' ? 'New Password (leave blank to keep current)' : 'Password'}

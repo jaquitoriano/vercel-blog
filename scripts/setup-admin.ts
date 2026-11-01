@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
-console.log('Using database URL:', process.env.POSTGRES_URL ? 'Supabase configured' : '(not set)');
+console.log('Using database URL:', process.env.DATABASE_URL ? 'Supabase configured' : '(not set)');
 
 // Initialize Prisma client
 const prisma = new PrismaClient();

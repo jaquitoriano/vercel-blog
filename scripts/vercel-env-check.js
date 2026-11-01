@@ -15,11 +15,11 @@ console.log('Build platform:', process.env.VERCEL ? 'Vercel' : 'Local/Other');
 
 // Define required environment variables with more flexible validation
 const requiredVars = {
-  // Database connection - we need at least one of these
+  // Database connection - runtime and migration URLs are both required
   database: {
-    required: ['POSTGRES_URL', 'POSTGRES_PRISMA_URL', 'DATABASE_URL'],
-    minRequired: 1, // Need at least one of these
-    message: 'At least one database connection string must be provided'
+    required: ['DATABASE_URL', 'DIRECT_URL'],
+    minRequired: 2,
+    message: 'DATABASE_URL and DIRECT_URL must be provided'
   },
   // Blob storage - make it optional for now
   blob: {
@@ -67,8 +67,8 @@ Object.entries(status).forEach(([groupName, group]) => {
 });
 
 // Print diagnostic info for database connections
-if (process.env.POSTGRES_URL) {
-  const url = new URL(process.env.POSTGRES_URL);
+if (process.env.DATABASE_URL) {
+  const url = new URL(process.env.DATABASE_URL);
   console.log('\nDatabase diagnostics:');
   console.log(`- Host: ${url.hostname}`);
   console.log(`- Protocol: ${url.protocol}`);
