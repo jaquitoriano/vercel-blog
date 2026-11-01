@@ -1,6 +1,6 @@
 # Vercel Blog CMS
 
-A modern, responsive blog platform built with Next.js, React, TypeScript, and Tailwind CSS. This blog application now uses Vercel Postgres for data storage.
+A modern, responsive blog platform built with Next.js, React, TypeScript, and Tailwind CSS. The blog uses Supabase PostgreSQL for data storage through Prisma.
 
 ## Features
 
@@ -9,17 +9,12 @@ A modern, responsive blog platform built with Next.js, React, TypeScript, and Ta
 - 📱 Responsive design for all devices
 - 🚀 Ready for deployment on Vercel
 - 🔄 SSR and SSG for optimal performance
-- 💾 PostgreSQL database via Vercel Postgres
+- 💾 PostgreSQL database via Supabase
 - 🔍 SEO optimized
 
-## Database Migration
+## Database
 
-The project has been migrated from SQLite to Vercel Postgres. The migration process involved:
-
-1. Updating the Prisma schema to use PostgreSQL as the provider
-2. Creating a baseline migration for the existing database schema
-3. Updating environment variables to use Vercel Postgres connection strings
-4. Creating and running a seed script to populate the database with sample data
+The production database is PostgreSQL hosted by Supabase. Prisma uses `DATABASE_URL` for the pooled runtime connection and `DIRECT_URL` for migrations and direct operations.
 
 ## Getting Started
 
@@ -45,8 +40,8 @@ npm install
 3. Set up environment variables in `.env.local`:
 
 ```
-POSTGRES_PRISMA_URL="postgres://..."
-POSTGRES_URL_NON_POOLING="postgres://..."
+DATABASE_URL="postgres://...supabase-pooler..."
+DIRECT_URL="postgres://...supabase-direct..."
 ```
 
 4. Run the development server:
@@ -58,14 +53,6 @@ npm run dev
 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Database Management
-
-### Seed the Database
-
-To seed the database with sample data:
-
-```bash
-node prisma/seed-postgres.js
-```
 
 ### Sync Schema with Database
 
@@ -96,7 +83,7 @@ npx prisma studio
 - [Next.js](https://nextjs.org/) - React framework
 - [TailwindCSS](https://tailwindcss.com/) - CSS framework
 - [Prisma](https://prisma.io/) - Database ORM
-- [Vercel Postgres](https://vercel.com/storage/postgres) - Database
+- [Supabase](https://supabase.com/) - PostgreSQL database
 - [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
 
 ## Deployment

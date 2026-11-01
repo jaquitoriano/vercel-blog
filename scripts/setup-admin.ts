@@ -2,34 +2,13 @@
 // It's designed to be run directly without requiring a full database seed
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env.local and .env
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
-console.log('Using database URL:', process.env.POSTGRES_URL || '(not set)');
-
-// If we're using SQLite, ensure the file exists
-if (process.env.POSTGRES_URL?.startsWith('file:')) {
-  // Extract SQLite file path
-  const dbPath = process.env.POSTGRES_URL.replace('file:', '');
-  const prismaDir = path.dirname(dbPath);
-  
-  // Ensure the prisma directory exists
-  if (!fs.existsSync(prismaDir)) {
-    fs.mkdirSync(prismaDir, { recursive: true });
-    console.log(`Created directory: ${prismaDir}`);
-  }
-  
-  // Touch the database file if it doesn't exist
-  if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, '');
-    console.log(`Created empty SQLite database file: ${dbPath}`);
-  }
-}
+console.log('Using database URL:', process.env.POSTGRES_URL ? 'Supabase configured' : '(not set)');
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
