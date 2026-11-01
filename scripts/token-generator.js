@@ -210,8 +210,8 @@ function updateEnvFile(token, storeId) {
     }
     
     // Update or add the store ID if needed
-    if (!envContent.includes('NEXT_PUBLIC_STORE_ID=')) {
-      envContent += `NEXT_PUBLIC_STORE_ID=${storeId}\n`;
+    if (!envContent.includes('BLOB_STORE_ID=')) {
+      envContent += `BLOB_STORE_ID=${storeId}\n`;
     }
     
     // Write back to file
@@ -231,7 +231,7 @@ function updateEnvFile(token, storeId) {
 function showToken(token, storeId) {
   console.log(`\n${colors.yellow}Copy these lines to your .env.local file:${colors.reset}`);
   console.log(`${colors.green}BLOB_READ_WRITE_TOKEN=${token}${colors.reset}`);
-  console.log(`${colors.green}NEXT_PUBLIC_STORE_ID=${storeId}${colors.reset}`);
+  console.log(`${colors.green}BLOB_STORE_ID=${storeId}${colors.reset}`);
   
   console.log(`\n${colors.blue}Make sure to restart your development server after updating the environment variables.${colors.reset}`);
   

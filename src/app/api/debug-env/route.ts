@@ -32,10 +32,10 @@ export async function GET(request: Request) {
     },
     blob: {
       hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,
-      hasStoreId: !!process.env.NEXT_PUBLIC_STORE_ID,
+      hasStoreId: !!process.env.BLOB_STORE_ID,
     },
     site: {
-      url: process.env.NEXT_PUBLIC_SITE_URL || 'not set',
+      url: process.env.SITE_URL || 'not set',
     }
   });
 }

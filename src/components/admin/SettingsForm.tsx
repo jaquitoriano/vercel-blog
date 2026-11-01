@@ -40,7 +40,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         if (!data.isConfigured) {
           let errorMessage = 'Image upload functionality is not available';
           if (!data.hasToken) errorMessage += ': BLOB_READ_WRITE_TOKEN environment variable is not set';
-          if (!data.hasStoreId) errorMessage += (data.hasToken ? ' and ' : ': ') + 'NEXT_PUBLIC_STORE_ID environment variable is not set';
+          if (!data.hasStoreId) errorMessage += (data.hasToken ? ' and ' : ': ') + 'BLOB_STORE_ID environment variable is not set';
           
           setError(errorMessage);
         }

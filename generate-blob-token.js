@@ -7,11 +7,11 @@ const fs = require('fs');
 require('dotenv').config({ path: '.env.local' });
 
 // Store ID is already defined in the environment
-const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+const storeId = process.env.BLOB_STORE_ID;
 
 async function generateBlobToken(clientId, clientSecret) {
   if (!storeId) {
-    throw new Error('NEXT_PUBLIC_STORE_ID environment variable is not set');
+    throw new Error('BLOB_STORE_ID environment variable is not set');
   }
 
   if (!clientId || !clientSecret) {

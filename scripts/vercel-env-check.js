@@ -23,7 +23,7 @@ const requiredVars = {
   },
   // Blob storage - make it optional for now
   blob: {
-    required: ['BLOB_READ_WRITE_TOKEN', 'NEXT_PUBLIC_STORE_ID'],
+    required: ['BLOB_READ_WRITE_TOKEN', 'BLOB_STORE_ID'],
     minRequired: 0, // Make it optional (set to 0)
     message: 'Blob storage configuration is incomplete but optional for deployment'
   }
@@ -80,7 +80,7 @@ if (process.env.DATABASE_URL) {
 
 // Print Next.js site URL info
 console.log('\nSite URL configuration:');
-console.log(`- NEXT_PUBLIC_SITE_URL: ${process.env.NEXT_PUBLIC_SITE_URL || 'Not set (using default)'}`);
+console.log(`- SITE_URL: ${process.env.SITE_URL || 'Not set (using default)'}`);
 
 // Print Node environment
 console.log('\nNode environment:');

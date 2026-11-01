@@ -20,7 +20,7 @@ console.log(`${colors.bold}${colors.blue}===== Vercel Blob Token Verification ==
 
 // Check token presence and format
 const token = process.env.BLOB_READ_WRITE_TOKEN;
-const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+const storeId = process.env.BLOB_STORE_ID;
 
 if (!token) {
   console.error(`${colors.red}ERROR: BLOB_READ_WRITE_TOKEN is not set${colors.reset}`);
@@ -49,9 +49,9 @@ if (!token) {
 }
 
 if (!storeId) {
-  console.error(`${colors.red}ERROR: NEXT_PUBLIC_STORE_ID is not set${colors.reset}`);
+  console.error(`${colors.red}ERROR: BLOB_STORE_ID is not set${colors.reset}`);
 } else {
-  console.log(`${colors.green}✓ NEXT_PUBLIC_STORE_ID is present: ${storeId}${colors.reset}`);
+  console.log(`${colors.green}✓ BLOB_STORE_ID is present: ${storeId}${colors.reset}`);
 }
 
 console.log(`\n${colors.blue}=== Environment Loading Information ===${colors.reset}`);

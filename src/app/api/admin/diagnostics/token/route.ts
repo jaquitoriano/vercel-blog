@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     logBlobConfigStatus(true);
     
     const token = process.env.BLOB_READ_WRITE_TOKEN;
-    const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+    const storeId = process.env.BLOB_STORE_ID;
     
     // Analyze token format without exposing full token
     let tokenInfo: any = {

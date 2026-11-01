@@ -90,8 +90,8 @@ function main() {
   console.log('- Runtime database URL:', hasRuntimeDatabaseUrl ? '✅ Set' : '❌ Not set');
   console.log('- Direct database URL:', hasDirectDatabaseUrl ? '✅ Set' : '❌ Not set');
   console.log('- Blob token:', process.env.BLOB_READ_WRITE_TOKEN ? '✅ Set' : '❌ Not set');
-  console.log('- Store ID:', process.env.NEXT_PUBLIC_STORE_ID ? '✅ Set' : '❌ Not set');
-  console.log('- Site URL:', process.env.NEXT_PUBLIC_SITE_URL || 'Not set');
+  console.log('- Store ID:', process.env.BLOB_STORE_ID ? '✅ Set' : '❌ Not set');
+  console.log('- Site URL:', process.env.SITE_URL || 'Not set');
   
   // Return success
   process.exit(0);

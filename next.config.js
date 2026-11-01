@@ -75,7 +75,7 @@ const nextConfig = {
   // Ensure environment variables are properly loaded
   env: {
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
-    NEXT_PUBLIC_STORE_ID: process.env.NEXT_PUBLIC_STORE_ID,
+    BLOB_STORE_ID: process.env.BLOB_STORE_ID,
     NEXT_CONFIG_BLOB_TOKEN: 'loaded', // Indicator that we've loaded the token in next.config
   },
   webpack: (config) => {

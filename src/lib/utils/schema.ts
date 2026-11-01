@@ -34,10 +34,10 @@ export function generateArticleSchema({
     },
     publisher: {
       '@type': 'Organization',
-      name: process.env.NEXT_PUBLIC_SITE_TITLE || 'Ikira Blog',
+      name: process.env.SITE_TITLE || 'Ikira Blog',
       logo: {
         '@type': 'ImageObject',
-        url: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`,
+        url: `${process.env.SITE_URL}/logo.png`,
       },
     },
     url: url,

@@ -19,7 +19,7 @@ const envConfig = dotenv.parse(fs.readFileSync(envLocalPath));
 
 // Check token
 const token = envConfig.BLOB_READ_WRITE_TOKEN;
-const storeId = envConfig.NEXT_PUBLIC_STORE_ID;
+const storeId = envConfig.BLOB_STORE_ID;
 
 if (!token) {
   console.error('❌ BLOB_READ_WRITE_TOKEN is not defined!');
@@ -27,7 +27,7 @@ if (!token) {
 }
 
 if (!storeId) {
-  console.error('❌ NEXT_PUBLIC_STORE_ID is not defined!');
+  console.error('❌ BLOB_STORE_ID is not defined!');
   process.exit(1);
 }
 

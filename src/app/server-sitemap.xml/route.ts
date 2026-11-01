@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 
 export async function GET() {
   // Base URL from environment variable
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ikira-blog.vercel.app';
+  const baseUrl = process.env.SITE_URL || 'https://ikira-blog.vercel.app';
 
   try {
     // Fetch all published posts

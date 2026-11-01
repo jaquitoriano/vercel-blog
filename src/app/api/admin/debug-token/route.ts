@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     };
     
     // Also check for the store ID
-    const storeId = process.env.NEXT_PUBLIC_STORE_ID || '';
+    const storeId = process.env.BLOB_STORE_ID || '';
     
     return NextResponse.json({
       tokenInfo,

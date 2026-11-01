@@ -14,8 +14,8 @@ export async function GET(req: NextRequest) {
     const envInfo = {
       nodeEnv: process.env.NODE_ENV,
       blobTokenSet: !!process.env.BLOB_READ_WRITE_TOKEN,
-      storeIdSet: !!process.env.NEXT_PUBLIC_STORE_ID,
-      publicSiteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+      storeIdSet: !!process.env.BLOB_STORE_ID,
+      publicSiteUrl: process.env.SITE_URL,
       envVariables: Object.keys(process.env).filter(key => 
         !key.includes('TOKEN') && 
         !key.includes('SECRET') && 

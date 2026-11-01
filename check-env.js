@@ -20,7 +20,7 @@ const envConfig = dotenv.parse(fs.readFileSync(envLocalPath));
 // Check for required variables
 const requiredVars = [
   'BLOB_READ_WRITE_TOKEN',
-  'NEXT_PUBLIC_STORE_ID'
+  'BLOB_STORE_ID'
 ];
 
 let hasErrors = false;
@@ -49,10 +49,10 @@ console.log('\nSimulating Next.js environment variable loading:');
 try {
   // Load variables as Next.js would
   process.env.BLOB_READ_WRITE_TOKEN = envConfig.BLOB_READ_WRITE_TOKEN;
-  process.env.NEXT_PUBLIC_STORE_ID = envConfig.NEXT_PUBLIC_STORE_ID;
+  process.env.BLOB_STORE_ID = envConfig.BLOB_STORE_ID;
   
   console.log(`✅ Successfully loaded BLOB_READ_WRITE_TOKEN: ${process.env.BLOB_READ_WRITE_TOKEN ? 'Value set' : 'Not set'}`);
-  console.log(`✅ Successfully loaded NEXT_PUBLIC_STORE_ID: ${process.env.NEXT_PUBLIC_STORE_ID || 'Not set'}`);
+  console.log(`✅ Successfully loaded BLOB_STORE_ID: ${process.env.BLOB_STORE_ID || 'Not set'}`);
   
   console.log('\n✅ Environment setup looks good!');
   console.log('If you are still experiencing issues, try:');

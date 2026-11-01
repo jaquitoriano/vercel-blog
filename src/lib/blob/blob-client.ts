@@ -25,7 +25,7 @@ const getToken = () => {
   }
   return token;
 };
-const STORE_ID = process.env.NEXT_PUBLIC_STORE_ID;
+const STORE_ID = process.env.BLOB_STORE_ID;
 
 // Helper function to upload a file to Vercel Blob
 export async function uploadToBlob(
@@ -89,7 +89,7 @@ export async function uploadToBlob(
       console.error('[ERROR] Vercel Blob token access denied. The token may be invalid or expired.');
       console.error('[ERROR] Please generate a new token for your blob store.');
     } else if (errorMessage.includes('not found')) {
-      console.error('[ERROR] Blob store not found. Check your NEXT_PUBLIC_STORE_ID.');
+      console.error('[ERROR] Blob store not found. Check your BLOB_STORE_ID.');
     }
     
     throw error;

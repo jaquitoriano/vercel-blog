@@ -38,7 +38,7 @@ export default async function RootLayout({
   const siteTitle = (await settingsRepository.getByKey('site_title')) || '';
   const siteDescription = (await settingsRepository.getByKey('meta_description')) || '';
   const siteLogo = (await settingsRepository.getByKey('site_logo')) || '';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vercel-blog-template.vercel.app';
+  const siteUrl = process.env.SITE_URL || 'https://vercel-blog-template.vercel.app';
   
   return (
     <html lang="en" className={`${inter.variable} ${serif.variable} scroll-smooth dark`}>

@@ -16,10 +16,10 @@ export function checkBlobConfig(debug: boolean = false) {
     errors.push('BLOB_READ_WRITE_TOKEN environment variable is not set');
   }
   
-  // Check for NEXT_PUBLIC_STORE_ID
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+  // Check for BLOB_STORE_ID
+  const storeId = process.env.BLOB_STORE_ID;
   if (!storeId) {
-    errors.push('NEXT_PUBLIC_STORE_ID environment variable is not set');
+    errors.push('BLOB_STORE_ID environment variable is not set');
   }
   
   if (debug) {
@@ -65,7 +65,7 @@ export function logBlobConfigStatus(verbose: boolean = false) {
       console.warn('- NODE_ENV:', process.env.NODE_ENV);
       console.warn('- Running in:', typeof window === 'undefined' ? 'server' : 'client');
       console.warn('- Has token:', !!process.env.BLOB_READ_WRITE_TOKEN);
-      console.warn('- Has store ID:', !!process.env.NEXT_PUBLIC_STORE_ID);
+      console.warn('- Has store ID:', !!process.env.BLOB_STORE_ID);
     }
   } else {
     console.log('✅ Vercel Blob is properly configured.');

@@ -56,7 +56,7 @@ export default async function Post({ params }: { params: { slug: string } }) {
   }
 
   // Generate Article Schema
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ikira-blog.vercel.app';
+  const baseUrl = process.env.SITE_URL || 'https://ikira-blog.vercel.app';
   const articleSchema = generateArticleSchema({
     title: post.title,
     description: post.excerpt,

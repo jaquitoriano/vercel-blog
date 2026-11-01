@@ -39,7 +39,7 @@ export async function generateMetadata(
   const parentMetadata = await parent;
   
   // Get base URL
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vercel-blog-template.vercel.app';
+  const baseUrl = process.env.SITE_URL || 'https://vercel-blog-template.vercel.app';
   
   // Get the current path from params and build the canonical URL
   const pathname = Object.values(params).join('/');

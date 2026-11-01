@@ -28,7 +28,7 @@ export async function createInnerMetadata({
   const settings = await settingsRepository.getAll();
   
   // Get base URL
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vercel-blog-template.vercel.app';
+  const baseUrl = process.env.SITE_URL || 'https://vercel-blog-template.vercel.app';
   
   // Normalize the favicon path
   const rawFavicon = settings.site_favicon;
