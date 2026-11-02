@@ -28,25 +28,28 @@ async function getPosts() {
   const authorsMap = new Map(authors.map(author => [author.id, author]));
   const categoriesMap = new Map(categories.map(category => [category.id, category]));
   
-  // Count tags and comments for each post
-  const [tagCounts, commentCounts] = await Promise.all([
-    Promise.all(
-      posts.map(async post => {
-        const count = await prisma.postTag.count({ where: { postId: post.id } });
-        return { postId: post.id, count };
+  // Group relations once instead of running one count query per post.
+  const tagCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
+    ? await prisma.postTag.groupBy({
+        by: ['postId'],
+        where: { postId: { in: postIds } },
+        _count: { _all: true },
       })
-    ),
-    Promise.all(
-      posts.map(async post => {
-        const count = await prisma.comment.count({ where: { postId: post.id } });
-        return { postId: post.id, count };
+    : [];
+  const commentCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
+    ? await prisma.comment.groupBy({
+        by: ['postId'],
+        where: { postId: { in: postIds } },
+        _count: { _all: true },
       })
-    ),
-  ]);
-  
-  // Create maps for tag and comment counts
-  const tagCountMap = new Map(tagCounts.map(item => [item.postId, item.count]));
-  const commentCountMap = new Map(commentCounts.map(item => [item.postId, item.count]));
+    : [];
+
+  const tagCountMap = new Map<string, number>(
+    tagCounts.map(item => [item.postId, item._count._all])
+  );
+  const commentCountMap = new Map<string, number>(
+    commentCounts.map(item => [item.postId, item._count._all])
+  );
   
   // Combine all data
   return posts.map(post => ({

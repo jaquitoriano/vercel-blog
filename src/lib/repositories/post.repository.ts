@@ -123,26 +123,32 @@ export const postRepository = {
       const authors = await prisma.author.findMany();
       const categories = await prisma.category.findMany();
       
-      // Get counts for tags and comments
-      const postTagCounts = await Promise.all(posts.map(async post => {
-        const tagCount = await prisma.postTag.count({
-          where: { postId: post.id }
-        });
-        return { id: post.id, tagCount };
-      }));
-      
-      const commentCounts = await Promise.all(posts.map(async post => {
-        const commentCount = await prisma.comment.count({
-          where: { postId: post.id }
-        });
-        return { id: post.id, commentCount };
-      }));
+      // Group relations once instead of running one count query per post.
+      const postIds = posts.map(post => post.id);
+      const postTagCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
+        ? await prisma.postTag.groupBy({
+            by: ['postId'],
+            where: { postId: { in: postIds } },
+            _count: { _all: true },
+          })
+        : [];
+      const commentCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
+        ? await prisma.comment.groupBy({
+            by: ['postId'],
+            where: { postId: { in: postIds } },
+            _count: { _all: true },
+          })
+        : [];
       
       // Create maps for fast lookups
       const authorsMap = new Map(authors.map(author => [author.id, author]));
       const categoriesMap = new Map(categories.map(category => [category.id, category]));
-      const tagCountMap = new Map(postTagCounts.map(item => [item.id, item.tagCount]));
-      const commentCountMap = new Map(commentCounts.map(item => [item.id, item.commentCount]));
+      const tagCountMap = new Map<string, number>(
+        postTagCounts.map(item => [item.postId, item._count._all])
+      );
+      const commentCountMap = new Map<string, number>(
+        commentCounts.map(item => [item.postId, item._count._all])
+      );
       
       // Combine all data
       return posts.map(post => ({
