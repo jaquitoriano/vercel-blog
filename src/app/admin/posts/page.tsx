@@ -7,12 +7,19 @@ async function getPosts() {
   // Get posts directly from Prisma without trying to include relations
   const posts = await prisma.post.findMany({
     orderBy: { date: 'desc' },
+    include: {
+      _count: {
+        select: {
+          tags: true,
+          comments: true,
+        },
+      },
+    },
   });
   
   // Manually fetch related data
   const authorIds = Array.from(new Set(posts.map(post => post.authorId)));
   const categoryIds = Array.from(new Set(posts.map(post => post.categoryId)));
-  const postIds = posts.map(post => post.id);
   
   // Fetch all authors and categories in parallel
   const [authors, categories] = await Promise.all([
@@ -28,38 +35,11 @@ async function getPosts() {
   const authorsMap = new Map(authors.map(author => [author.id, author]));
   const categoriesMap = new Map(categories.map(category => [category.id, category]));
   
-  // Group relations once instead of running one count query per post.
-  const tagCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
-    ? await prisma.postTag.groupBy({
-        by: ['postId'],
-        where: { postId: { in: postIds } },
-        _count: { _all: true },
-      })
-    : [];
-  const commentCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
-    ? await prisma.comment.groupBy({
-        by: ['postId'],
-        where: { postId: { in: postIds } },
-        _count: { _all: true },
-      })
-    : [];
-
-  const tagCountMap = new Map<string, number>(
-    tagCounts.map(item => [item.postId, item._count._all])
-  );
-  const commentCountMap = new Map<string, number>(
-    commentCounts.map(item => [item.postId, item._count._all])
-  );
-  
   // Combine all data
   return posts.map(post => ({
     ...post,
     author: authorsMap.get(post.authorId),
     category: categoriesMap.get(post.categoryId),
-    _count: {
-      tags: tagCountMap.get(post.id) || 0,
-      comments: commentCountMap.get(post.id) || 0
-    }
   }));
 }
 

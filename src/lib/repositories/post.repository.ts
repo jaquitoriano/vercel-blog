@@ -117,48 +117,29 @@ export const postRepository = {
     try {
       const posts = await prisma.post.findMany({
         orderBy: { date: 'desc' },
+        include: {
+          _count: {
+            select: {
+              tags: true,
+              comments: true,
+            },
+          },
+        },
       });
       
       // Fetch all related data in parallel for better performance
       const authors = await prisma.author.findMany();
       const categories = await prisma.category.findMany();
       
-      // Group relations once instead of running one count query per post.
-      const postIds = posts.map(post => post.id);
-      const postTagCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
-        ? await prisma.postTag.groupBy({
-            by: ['postId'],
-            where: { postId: { in: postIds } },
-            _count: { _all: true },
-          })
-        : [];
-      const commentCounts: Array<{ postId: string; _count: { _all: number } }> = postIds.length > 0
-        ? await prisma.comment.groupBy({
-            by: ['postId'],
-            where: { postId: { in: postIds } },
-            _count: { _all: true },
-          })
-        : [];
-      
       // Create maps for fast lookups
       const authorsMap = new Map(authors.map(author => [author.id, author]));
       const categoriesMap = new Map(categories.map(category => [category.id, category]));
-      const tagCountMap = new Map<string, number>(
-        postTagCounts.map(item => [item.postId, item._count._all])
-      );
-      const commentCountMap = new Map<string, number>(
-        commentCounts.map(item => [item.postId, item._count._all])
-      );
       
       // Combine all data
       return posts.map(post => ({
         ...post,
         author: authorsMap.get(post.authorId) || null,
         category: categoriesMap.get(post.categoryId) || null,
-        _count: {
-          tags: tagCountMap.get(post.id) || 0,
-          comments: commentCountMap.get(post.id) || 0
-        }
       }));
     } catch (error) {
       console.error('Error finding posts for admin:', error);
