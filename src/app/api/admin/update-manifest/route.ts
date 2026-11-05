@@ -1,8 +1,18 @@
 import { NextRequest } from 'next/server';
+import { auth } from '@/auth';
 import { updateManifestIcons } from '@/lib/utils/manifest-updater';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+
+    if (session?.user.role !== 'ADMIN') {
+      return new Response(JSON.stringify({ error: 'Forbidden - Admin privileges required' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const { favicon } = await request.json();
 
     if (!favicon) {

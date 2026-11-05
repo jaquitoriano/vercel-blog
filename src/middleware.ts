@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 
 export async function middleware(request: NextRequest) {
   const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
@@ -8,9 +9,10 @@ export async function middleware(request: NextRequest) {
   const isLogoutPath = request.nextUrl.pathname === "/admin/logout";
   const isPostPath = request.nextUrl.pathname.startsWith("/posts/");
   
-  // Get the auth cookie which contains the user's email
-  const authCookie = request.cookies.get("admin-auth");
-  const isLoggedIn = !!authCookie;
+  // The auth cookie holds a signed session token, so verify it rather than
+  // trusting that the cookie exists
+  const authCookie = request.cookies.get(SESSION_COOKIE_NAME);
+  const isLoggedIn = !!(await verifySessionToken(authCookie?.value));
   
   // Debug logging for auth state
   console.log('Middleware auth check:', {
@@ -18,7 +20,6 @@ export async function middleware(request: NextRequest) {
     isAdminPath,
     isLoginPath,
     hasAuthCookie: !!authCookie,
-    authCookieValue: authCookie ? `${authCookie.value.substring(0, 3)}...` : 'none',
     cookieName: authCookie?.name,
     isLoggedIn,
     allCookies: request.cookies.getAll().map(c => c.name),
@@ -53,6 +54,13 @@ export async function middleware(request: NextRequest) {
     return response;
   }
   
+  // Admin API routes get a 401 rather than a redirect to the login page
+  if (isAdminApiPath && !isLoggedIn) {
+    const unauthorizedResponse = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    unauthorizedResponse.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return unauthorizedResponse;
+  }
+
   // Redirect to login if accessing admin pages without being logged in
   if (isAdminPath && !isLoggedIn && !isLoginPath && !isLogoutPath) {
     const redirectResponse = NextResponse.redirect(new URL("/admin/login", request.url));
