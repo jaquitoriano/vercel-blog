@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth/requireAdmin';
 import { tagRepository } from '@/lib/repositories/tag.repository';
 
 export async function GET() {
@@ -15,6 +16,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const data = await request.json();
     const tag = await tagRepository.create(data);
