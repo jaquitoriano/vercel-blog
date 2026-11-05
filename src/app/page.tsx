@@ -6,6 +6,11 @@ import { formatDate } from '@/lib/utils';
 import ImageHandler from '@/components/ImageHandler';
 import { settingsRepository } from '@/lib/repositories/settings.repository';
 import { getFeaturedPostsWithCache, getRecentPostsWithCache } from '@/lib/cache/homepage-cache';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 export default async function Home() {
   // Get data from cache (falls back to PostgreSQL database)

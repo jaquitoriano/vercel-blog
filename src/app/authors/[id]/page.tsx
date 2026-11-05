@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   return createInnerMetadata({
     title: `${author.name} - Author`,
     description: author.bio || `Browse posts by ${author.name}`,
+    path: `/authors/${encodeURIComponent(author.id)}`,
     image: author.avatar || undefined
   });
 }

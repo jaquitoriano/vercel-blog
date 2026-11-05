@@ -1,14 +1,16 @@
 import Link from 'next/link';
+import { createInnerMetadata } from '@/lib/utils/metadata';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 import { getAllAuthorsWithCache } from '@/lib/cache/authors-cache';
 
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
+export const generateMetadata = () => createInnerMetadata({
   title: 'Authors',
   description: 'Meet our team of writers and contributors',
-};
+  path: '/authors',
+  isListing: true,
+});
 
 export default async function AuthorsPage() {
   // Get all authors from cache (falls back to database)

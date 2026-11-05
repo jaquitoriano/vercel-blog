@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { createInnerMetadata } from '@/lib/utils/metadata';
 import { getAllTags, getPostsByTag } from '@/lib/postgresData';
 
-export const metadata = {
+export const generateMetadata = () => createInnerMetadata({
   title: 'Tags',
   description: 'Browse posts by tag',
-};
+  path: '/tags',
+  isListing: true,
+});
 
 export default async function TagsPage() {
   // Get all tags from database
