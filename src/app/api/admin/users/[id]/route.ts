@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import bcryptjs from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { auth } from '@/auth';
 
 interface RouteParams {
@@ -156,21 +155,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     });
     
-    // If the user updated their own account and the email changed, update cookie
-    const cookieStore = cookies();
-    const authCookie = cookieStore.get('admin-auth');
-    if (authCookie?.value === existingUser.email && email !== existingUser.email) {
-      cookies().set({
-        name: 'admin-auth',
-        value: email,
-        httpOnly: true,
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24, // 1 day
-        sameSite: 'lax',
-      });
-    }
-    
     return NextResponse.json({
       success: true,
       message: 'User updated successfully',
@@ -236,10 +220,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
     
     // Check if user is trying to delete their own account
-    const cookieStore = cookies();
-    const authCookie = cookieStore.get('admin-auth');
-    
-    if (authCookie?.value === user.email) {
+    if (session.user.id === params.id) {
       return NextResponse.json(
         { success: false, message: 'Cannot delete your own account while logged in' },
         { status: 403 }

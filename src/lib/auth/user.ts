@@ -44,6 +44,17 @@ export async function getUserByEmail(email: string) {
   }
 }
 
+export async function getUserById(id: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: { id }
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return null;
+  }
+}
+
 export async function validateUserPassword(email: string, password: string) {
   try {
     const user = await getUserByEmail(email);

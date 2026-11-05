@@ -1,28 +1,31 @@
 import { cookies } from "next/headers";
-import { getUserByEmail } from "@/lib/auth/user";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getUserById } from "@/lib/auth/user";
 
 export async function auth() {
-  const cookieStore = cookies();
-  const authCookie = cookieStore.get("admin-auth");
-  
-  if (!authCookie || !authCookie.value) {
+  const token = cookies().get(SESSION_COOKIE_NAME)?.value;
+  const userId = await verifySessionToken(token);
+
+  if (!userId) {
     return null;
   }
 
   try {
-    // The cookie value should be the user's email
-    const email = authCookie.value;
-    const user = await getUserByEmail(email);
-    
+    const user = await getUserById(userId);
+
     if (!user) {
       return null;
     }
 
     // Don't expose the password
     const { password: _, ...userWithoutPassword } = user;
-    
+
     return {
-      user: userWithoutPassword
+      user: {
+        ...userWithoutPassword,
+        // Some seed scripts store "admin" while role checks expect "ADMIN"
+        role: user.role.toUpperCase() === "ADMIN" ? "ADMIN" : user.role,
+      },
     };
   } catch (error) {
     console.error("Authentication error:", error);

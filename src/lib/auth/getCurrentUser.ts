@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers';
-import { getUserByEmail } from '@/lib/auth/user';
+import { auth } from '@/auth';
 
 export type UserStatus = {
   isLoggedIn: boolean;
@@ -12,39 +11,10 @@ export type UserStatus = {
 };
 
 export async function getCurrentUser(): Promise<UserStatus> {
-  const cookieStore = cookies();
-  const authCookie = cookieStore.get('admin-auth');
-  
-  if (!authCookie?.value) {
-    return {
-      isLoggedIn: false,
-      user: null
-    };
-  }
+  const session = await auth();
 
-  try {
-    const email = authCookie.value;
-    const user = await getUserByEmail(email);
-    
-    if (!user) {
-      return {
-        isLoggedIn: false,
-        user: null
-      };
-    }
-
-    // Remove sensitive data
-    const { password: _, ...userWithoutPassword } = user;
-    
-    return {
-      isLoggedIn: true,
-      user: userWithoutPassword as any
-    };
-  } catch (error) {
-    console.error('Error fetching current user:', error);
-    return {
-      isLoggedIn: false,
-      user: null
-    };
-  }
+  return {
+    isLoggedIn: !!session,
+    user: session?.user ?? null
+  };
 }
