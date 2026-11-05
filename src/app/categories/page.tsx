@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { createInnerMetadata } from '@/lib/utils/metadata';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/Card';
 import { categoryRepository } from '@/lib/repositories/category.repository';
 
-export const metadata = {
+export const generateMetadata = () => createInnerMetadata({
   title: 'Categories',
   description: 'Browse posts by category',
-};
+  path: '/categories',
+  isListing: true,
+});
 
 export default async function CategoriesPage() {
   const categories = await categoryRepository.findAll();

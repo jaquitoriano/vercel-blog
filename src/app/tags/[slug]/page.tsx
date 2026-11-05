@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   
   return createInnerMetadata({
     title: `${tag.name} - Tag`,
-    description: `Browse all posts tagged with ${tag.name}`
+    description: `Browse all posts tagged with ${tag.name}`,
+    path: `/tags/${encodeURIComponent(tag.slug)}`
   });
 }
 

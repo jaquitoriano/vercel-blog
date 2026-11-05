@@ -1,16 +1,18 @@
 import Link from 'next/link';
+import { createInnerMetadata } from '@/lib/utils/metadata';
 import { getAllPostsWithCache } from '@/lib/cache/posts-cache';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Button } from '@/components/Button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/Card';
 import ImageHandler from '@/components/ImageHandler';
 
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
+export const generateMetadata = () => createInnerMetadata({
   title: 'All Posts',
   description: 'Browse all our blog posts and articles',
-};
+  path: '/posts',
+  isListing: true,
+});
 
 export default async function Posts() {
   const allPosts = await getAllPostsWithCache();

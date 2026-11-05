@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return createInnerMetadata({
     title: post.title,
     description: post.excerpt,
+    path: `/posts/${encodeURIComponent(post.slug)}`,
     image: post.coverImage,
     isDraft: !isPublished
   });

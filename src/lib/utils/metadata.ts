@@ -5,6 +5,10 @@ import { getRobotsMeta } from './robots';
 type MetadataInput = {
   title: string;
   description: string;
+  /** Path of this page, used for its canonical URL and og:url. Omit on pages that shouldn't be indexed. */
+  path?: string;
+  /** Site-level page: keeps the site title suffix and falls back to the site's sharing image. */
+  isListing?: boolean;
   image?: string;
   isAdminPage?: boolean;
   isPreview?: boolean;
@@ -18,6 +22,8 @@ type MetadataInput = {
 export async function createInnerMetadata({
   title,
   description,
+  path,
+  isListing = false,
   image,
   isAdminPage = false,
   isPreview = false,
@@ -27,9 +33,6 @@ export async function createInnerMetadata({
   // Get settings
   const settings = await settingsRepository.getAll();
   
-  // Get base URL
-  const baseUrl = process.env.SITE_URL || 'https://vercel-blog-template.vercel.app';
-  
   // Normalize the favicon path
   const rawFavicon = settings.site_favicon;
   const favicon = rawFavicon 
@@ -38,28 +41,31 @@ export async function createInnerMetadata({
         : `/${rawFavicon}`)
     : null;
 
+  const sharingImage = image || (isListing ? settings.og_image : undefined);
+
   return {
-    title: {
-      absolute: title, // Use the exact title without template
-    },
+    // Listing pages use the root title template; other pages use the exact title
+    title: isListing ? title : { absolute: title },
     description,
+    // Paths resolve against metadataBase, which the root layout sets
+    alternates: path ? { canonical: path } : undefined,
     robots: getRobotsMeta({ isAdminPage, isPreview, isDraft, isError }),
     openGraph: {
       title,
       description,
-      url: baseUrl,
+      url: path,
       siteName: settings.site_title || 'Blog',
       locale: 'en_US',
-      type: 'article',
-      images: image 
-        ? [{ url: image, width: 1200, height: 630, alt: title }]
+      type: isListing ? 'website' : 'article',
+      images: sharingImage
+        ? [{ url: sharingImage, width: 1200, height: 630, alt: title }]
         : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: image ? [image] : undefined,
+      images: sharingImage ? [sharingImage] : undefined,
       creator: settings.twitter_handle || undefined,
     },
     ...(favicon ? {

@@ -1,9 +1,12 @@
 import Image from 'next/image';
+import { createInnerMetadata } from '@/lib/utils/metadata';
 
-export const metadata = {
+export const generateMetadata = () => createInnerMetadata({
   title: 'About Us',
   description: "The name Ikira draws from the elegance of ink and the spark of irony — representing the balance between structure and spontaneity. It’s about creating with meaning, not just noise.",
-};
+  path: '/about',
+  isListing: true,
+});
 
 export default function AboutPage() {
   return (

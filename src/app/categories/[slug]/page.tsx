@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   
   return createInnerMetadata({
     title: `${category.name} - Category`,
-    description: category.description || `Browse all posts in the ${category.name} category`
+    description: category.description || `Browse all posts in the ${category.name} category`,
+    path: `/categories/${encodeURIComponent(category.slug)}`
   });
 }
 
