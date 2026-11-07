@@ -55,17 +55,18 @@ export async function getUserById(id: string) {
   }
 }
 
+// A real cost-10 hash of a random value nobody knows. Comparing against it when
+// the email is unknown makes that path as slow as a wrong password, so response
+// time doesn't reveal which emails have accounts.
+const DUMMY_PASSWORD_HASH = '$2b$10$FB7NNSM/LE5MFVEsGcRRu.ycfT94EjS7bzJ1coujc6TibU.HetRwu';
+
 export async function validateUserPassword(email: string, password: string) {
   try {
     const user = await getUserByEmail(email);
-    
-    if (!user) {
-      return null;
-    }
-    
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
-    
-    if (!isPasswordValid) {
+
+    const isPasswordValid = await bcryptjs.compare(password, user?.password ?? DUMMY_PASSWORD_HASH);
+
+    if (!user || !isPasswordValid) {
       return null;
     }
     
