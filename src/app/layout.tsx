@@ -32,12 +32,18 @@ export default async function RootLayout({
 }) {
   // Get current user status
   const userStatus = await getCurrentUser();
-  // Get Google Analytics ID from site settings (server-side)
-  const gaId = (await settingsRepository.getByKey('google_analytics_id')) || '';
-  // Fetch a few site settings used for structured data and metadata
-  const siteTitle = (await settingsRepository.getByKey('site_title')) || '';
-  const siteDescription = (await settingsRepository.getByKey('meta_description')) || '';
-  const siteLogo = (await settingsRepository.getByKey('site_logo')) || '';
+  // Google Analytics ID plus the site settings used for structured data
+  const [rawGaId, siteTitle, siteDescription, siteLogo] = (
+    await Promise.all([
+      settingsRepository.getByKey('google_analytics_id'),
+      settingsRepository.getByKey('site_title'),
+      settingsRepository.getByKey('meta_description'),
+      settingsRepository.getByKey('site_logo'),
+    ])
+  ).map((value) => value || '');
+  // The ID is interpolated into an inline script, so accept only a plain token
+  // such as G-XXXXXXX
+  const gaId = /^[A-Za-z0-9_-]+$/.test(rawGaId.trim()) ? rawGaId.trim() : '';
   const siteUrl = process.env.SITE_URL || 'https://vercel-blog-template.vercel.app';
   
   return (
@@ -80,7 +86,8 @@ export default async function RootLayout({
                 target: `${siteUrl}/search?q={search_term_string}`,
                 "query-input": "required name=search_term_string",
               }
-            })
+            // Escape < so a setting containing </script> can't close the tag early
+            }).replace(/</g, '\\u003c')
           }}
         />
       </head>

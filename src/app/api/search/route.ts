@@ -14,8 +14,10 @@ export async function GET(request: NextRequest) {
   // route is compatible with Node runtime and static generation checks.
   const url = new URL(request.url);
   const searchParams = url.searchParams;
-    const query = searchParams.get('q');
-    const page = parseInt(searchParams.get('page') || '1');
+    // Cap the length: the query is also part of the Redis cache key
+    const query = searchParams.get('q')?.trim().slice(0, 100);
+    // A non-numeric or negative page would make Prisma throw on `skip`
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
     const category = searchParams.get('category');
     const tag = searchParams.get('tag');
     const sort = (searchParams.get('sort') || 'relevance') as 'relevance' | 'date' | 'title';
