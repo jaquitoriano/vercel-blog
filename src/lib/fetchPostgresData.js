@@ -3,20 +3,21 @@
  * instead of using mock data
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './db/prisma';
 
-// Initialize Prisma Client
-const prismaClientSingleton = () => {
-  return new PrismaClient();
+// Load each post's author, category and tags in the same query, rather than
+// one query per relation per post
+const postInclude = {
+  author: true,
+  category: true,
+  tags: { include: { tag: true } },
 };
 
-// Ensure we have only one instance of PrismaClient in development
-const globalForPrisma = globalThis;
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+// Callers expect `tags` to be a plain array of tags, not PostTag join rows
+const flattenTags = (post) => ({
+  ...post,
+  tags: post.tags.map((postTag) => postTag.tag),
+});
 
 /**
  * Get all posts with related data
@@ -29,43 +30,10 @@ export async function getAllPosts() {
     orderBy: {
       date: 'desc',
     },
-    include: {
-      // Note: We can't directly include relations that aren't in the schema
-      // We'll need to fetch related data separately
-    }
+    include: postInclude,
   });
 
-  // Enhance each post with author, category, and tags data
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const author = await prisma.author.findUnique({
-      where: { id: post.authorId }
-    });
-    
-    const category = await prisma.category.findUnique({
-      where: { id: post.categoryId }
-    });
-    
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+  return posts.map(flattenTags);
 }
 
 /**
@@ -73,46 +41,17 @@ export async function getAllPosts() {
  */
 export async function getPostBySlug(slug) {
   const post = await prisma.post.findUnique({
-    where: { 
+    where: {
       slug,
       status: 'PUBLISHED' // Only get published posts for public display
-    }
+    },
+    include: {
+      ...postInclude,
+      comments: { orderBy: { createdAt: 'desc' } },
+    },
   });
-  
-  if (!post) return null;
-  
-  const author = await prisma.author.findUnique({
-    where: { id: post.authorId }
-  });
-  
-  const category = await prisma.category.findUnique({
-    where: { id: post.categoryId }
-  });
-  
-  const postTags = await prisma.postTag.findMany({
-    where: { postId: post.id }
-  });
-  
-  const tags = await Promise.all(
-    postTags.map(async (pt) => {
-      return prisma.tag.findUnique({
-        where: { id: pt.tagId }
-      });
-    })
-  );
-  
-  const comments = await prisma.comment.findMany({
-    where: { postId: post.id },
-    orderBy: { createdAt: 'desc' }
-  });
-  
-  return {
-    ...post,
-    author,
-    category,
-    tags: tags.filter(Boolean),
-    comments
-  };
+
+  return post ? flattenTags(post) : null;
 }
 
 /**
@@ -120,45 +59,49 @@ export async function getPostBySlug(slug) {
  */
 export async function getFeaturedPosts() {
   const posts = await prisma.post.findMany({
-    where: { 
+    where: {
       featured: true,
       status: 'PUBLISHED' // Only get published posts for public display
     },
     orderBy: { date: 'desc' },
-    take: 3
+    take: 3,
+    include: postInclude,
   });
-  
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const author = await prisma.author.findUnique({
-      where: { id: post.authorId }
-    });
-    
-    const category = await prisma.category.findUnique({
-      where: { id: post.categoryId }
-    });
-    
-    // Get tags for each post
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+
+  return posts.map(flattenTags);
+}
+
+/**
+ * Get published posts that share at least one tag with the given post, most
+ * shared tags first and newest first among equals
+ */
+export async function getRelatedPosts(postId, limit = 3) {
+  const postTags = await prisma.postTag.findMany({
+    where: { postId },
+    select: { tagId: true },
+  });
+  const tagIds = postTags.map((pt) => pt.tagId);
+
+  if (tagIds.length === 0) return [];
+
+  const candidates = await prisma.post.findMany({
+    where: {
+      status: 'PUBLISHED',
+      id: { not: postId },
+      tags: { some: { tagId: { in: tagIds } } },
+    },
+    orderBy: { date: 'desc' },
+    include: postInclude,
+  });
+
+  const sharedTagCount = (post) =>
+    post.tags.filter((pt) => tagIds.includes(pt.tagId)).length;
+
+  // Array.prototype.sort is stable, so equal counts keep newest-first order
+  return candidates
+    .sort((a, b) => sharedTagCount(b) - sharedTagCount(a))
+    .slice(0, limit)
+    .map(flattenTags);
 }
 
 /**
@@ -192,106 +135,33 @@ export async function getAllAuthors() {
  * Get posts by category slug
  */
 export async function getPostsByCategory(categorySlug) {
-  const category = await prisma.category.findUnique({
-    where: { slug: categorySlug }
-  });
-  
-  if (!category) return [];
-  
   const posts = await prisma.post.findMany({
-    where: { 
-      categoryId: category.id,
+    where: {
+      category: { slug: categorySlug },
       status: 'PUBLISHED' // Only get published posts for public display
     },
-    orderBy: { date: 'desc' }
+    orderBy: { date: 'desc' },
+    include: postInclude,
   });
-  
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const author = await prisma.author.findUnique({
-      where: { id: post.authorId }
-    });
-    
-    // Get tags for each post
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+
+  return posts.map(flattenTags);
 }
 
 /**
  * Get posts by tag slug
  */
 export async function getPostsByTag(tagSlug) {
-  const tag = await prisma.tag.findUnique({
-    where: { slug: tagSlug }
-  });
-  
-  if (!tag) return [];
-  
-  const postTags = await prisma.postTag.findMany({
-    where: { tagId: tag.id }
-  });
-  
-  const postIds = postTags.map(pt => pt.postId);
-  
   const posts = await prisma.post.findMany({
-    where: { 
-      id: { 
-        in: postIds 
-      },
+    where: {
+      tags: { some: { tag: { slug: tagSlug } } },
       status: 'PUBLISHED' // Only get published posts for public display
     },
-    orderBy: { date: 'desc' }
+    orderBy: { date: 'desc' },
+    // Includes all of each post's tags, not just the requested one
+    include: postInclude,
   });
-  
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const author = await prisma.author.findUnique({
-      where: { id: post.authorId }
-    });
-    
-    const category = await prisma.category.findUnique({
-      where: { id: post.categoryId }
-    });
-    
-    // Get all tags for the post, not just the current tag
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+
+  return posts.map(flattenTags);
 }
 
 /**
@@ -299,44 +169,15 @@ export async function getPostsByTag(tagSlug) {
  */
 export async function getPostsByAuthor(authorId) {
   const posts = await prisma.post.findMany({
-    where: { 
+    where: {
       authorId,
       status: 'PUBLISHED' // Only get published posts for public display
     },
-    orderBy: { date: 'desc' }
+    orderBy: { date: 'desc' },
+    include: postInclude,
   });
-  
-  const author = await prisma.author.findUnique({
-    where: { id: authorId }
-  });
-  
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const category = await prisma.category.findUnique({
-      where: { id: post.categoryId }
-    });
-    
-    // Get tags for each post
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+
+  return posts.map(flattenTags);
 }
 
 /**
@@ -370,40 +211,11 @@ export async function searchPosts(searchTerm) {
         }
       ]
     },
-    orderBy: { date: 'desc' }
+    orderBy: { date: 'desc' },
+    include: postInclude,
   });
-  
-  const enhancedPosts = await Promise.all(posts.map(async (post) => {
-    const author = await prisma.author.findUnique({
-      where: { id: post.authorId }
-    });
-    
-    const category = await prisma.category.findUnique({
-      where: { id: post.categoryId }
-    });
-    
-    // Get tags for each post
-    const postTags = await prisma.postTag.findMany({
-      where: { postId: post.id }
-    });
-    
-    const tags = await Promise.all(
-      postTags.map(async (pt) => {
-        return prisma.tag.findUnique({
-          where: { id: pt.tagId }
-        });
-      })
-    );
-    
-    return {
-      ...post,
-      author,
-      category,
-      tags: tags.filter(Boolean)
-    };
-  }));
-  
-  return enhancedPosts;
+
+  return posts.map(flattenTags);
 }
 
 /**

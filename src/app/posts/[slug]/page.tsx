@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPostBySlugWithRelations, getRelatedPosts, getPostWithComments } from '@/lib/postgresData';
+import { getPostBySlugWithRelations, getRelatedPosts } from '@/lib/postgresData';
 import { formatDate, calculateReadTime } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
@@ -77,8 +77,8 @@ export default async function Post({ params }: { params: { slug: string } }) {
 
   const readTime = calculateReadTime(post.content);
   const relatedPosts = await getRelatedPosts(post.id, 3);
-  const postWithComments = await getPostWithComments(post.id);
-  const comments = postWithComments?.comments || [];
+  // getPostBySlug already loads the comments, newest first
+  const comments = post.comments ?? [];
   
   // Add preview banner for unpublished posts
   const isPreview = post.status !== 'PUBLISHED';
@@ -88,7 +88,8 @@ export default async function Post({ params }: { params: { slug: string } }) {
       {/* Article Schema */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        // Escape < so a title like </script> can't close the tag early
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, '\\u003c') }}
       />
       
       {/* Preview Banner */}
@@ -380,14 +381,14 @@ export default async function Post({ params }: { params: { slug: string } }) {
             Comments ({comments.length})
           </h2>
           <div className="space-y-6">
-            {comments.filter(c => c.approved).map((comment) => (
+            {comments.map((comment) => (
               <Card key={comment.id} className="bg-card border-primary/10 hover:border-primary/30 transition-all">
                 <CardContent className="p-5 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h4 className="font-bold">{comment.name}</h4>
+                      <h4 className="font-bold">{comment.authorName}</h4>
                       <p className="text-xs text-muted-foreground">
-                        {formatDate(comment.date)}
+                        {formatDate(comment.createdAt)}
                       </p>
                     </div>
                   </div>

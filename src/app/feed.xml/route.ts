@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/db/prisma'
 import { MetadataRoute } from 'next'
 
 function wrapCdata(content: string | null | undefined): string {
