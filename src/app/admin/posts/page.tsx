@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { postRepository } from '@/lib/repositories/post.repository';
 import { prisma } from '@/lib/db/prisma';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 async function getPosts() {
   // Get posts directly from Prisma without trying to include relations
@@ -44,6 +45,7 @@ async function getPosts() {
 }
 
 export default async function AdminPosts({ searchParams }: { searchParams: { status?: string } }) {
+  await requireAdminPage();
   const statusFilter = searchParams.status?.toUpperCase();
   const posts = await getPosts();
 

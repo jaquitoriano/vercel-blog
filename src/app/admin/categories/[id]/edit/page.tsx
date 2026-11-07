@@ -1,8 +1,8 @@
-import { auth } from '@/auth';
 import { CategoryForm } from '@/components/CategoryForm';
 import { prisma } from '@/lib/db/prisma';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Edit Category - Admin',
@@ -31,11 +31,7 @@ async function getCategory(id: string) {
 }
 
 export default async function EditCategoryPage({ params }: EditCategoryPageProps) {
-  const session = await auth();
-  
-  if (!session || session.user?.role !== 'ADMIN') {
-    redirect('/auth/login');
-  }
+  await requireAdminPage();
 
   const category = await getCategory(params.id);
   

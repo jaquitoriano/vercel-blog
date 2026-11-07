@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { prisma } from '@/lib/db/prisma';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 async function getTagsWithPostCount() {
   // Get all tags
@@ -29,6 +30,7 @@ async function getTagsWithPostCount() {
 }
 
 export default async function AdminTags() {
+  await requireAdminPage();
   const tagsWithCounts = await getTagsWithPostCount();
 
   return (

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { categoryRepository } from '@/lib/repositories/category.repository';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export default async function AdminCategories() {
+  await requireAdminPage();
   const categoriesWithCounts = await categoryRepository.findAll();
 
   return (
