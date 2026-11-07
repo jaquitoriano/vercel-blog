@@ -22,7 +22,6 @@ export async function GET(req: NextRequest) {
       directEnvCheck: {
         hasToken: !!process.env.BLOB_READ_WRITE_TOKEN,
         hasStoreId: !!process.env.BLOB_STORE_ID,
-        tokenPrefix: process.env.BLOB_READ_WRITE_TOKEN ? process.env.BLOB_READ_WRITE_TOKEN.substring(0, 5) + '...' : 'not set'
       }
     });
     
