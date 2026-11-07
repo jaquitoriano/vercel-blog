@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { uploadToBlob } from '@/lib/blob/blob-client';
 
 interface MediaImage {
   url: string;
