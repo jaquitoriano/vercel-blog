@@ -1,7 +1,6 @@
-import { auth } from '@/auth';
 import { TagForm } from '@/components/TagForm';
-import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Create Tag - Admin',
@@ -9,11 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CreateTagPage() {
-  const session = await auth();
-  
-  if (!session || session.user?.role !== 'ADMIN') {
-    redirect('/auth/login');
-  }
+  await requireAdminPage();
 
   return (
     <div className="container py-8">

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
 import { formatDate } from '@/lib/utils';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export default async function AuthorDetail({ params }: { params: { id: string } }) {
+  await requireAdminPage();
   const authorId = params.id;
   const author = await prisma.author.findUnique({
     where: { id: authorId },

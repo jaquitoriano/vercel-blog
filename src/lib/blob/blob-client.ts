@@ -50,16 +50,22 @@ export async function uploadToBlob(
       throw new Error('Invalid file type provided. Expected Blob or File-like object');
     }
 
+    // folder and filename can come from the request, so limit them to safe
+    // path characters before building the blob path
+    const safeFolder = folder
+      .replace(/[^a-zA-Z0-9/_-]/g, '')
+      .replace(/\/{2,}/g, '/')
+      .replace(/^\/+|\/+$/g, '') || 'uploads';
+    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+
     // Generate a unique filename with timestamp
     const timestamp = new Date().getTime();
-    const uniqueFilename = `${timestamp}-${filename}`;
-    const path = `${folder}/${uniqueFilename}`;
-    
+    const uniqueFilename = `${timestamp}-${safeName}`;
+    const path = `${safeFolder}/${uniqueFilename}`;
+
     console.log('[DEBUG] Uploading to Vercel Blob:', {
       path,
-      folder,
       tokenLength: token.length,
-      tokenPrefix: token.substring(0, 10) + '...'
     });
 
     // Upload to Vercel Blob

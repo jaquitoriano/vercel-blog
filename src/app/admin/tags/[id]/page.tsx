@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
 import { formatDate } from '@/lib/utils';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export default async function TagDetail({ params }: { params: { id: string } }) {
+  await requireAdminPage();
   const tagId = params.id;
   const tag = await prisma.tag.findUnique({
     where: { id: tagId },

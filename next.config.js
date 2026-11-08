@@ -72,12 +72,8 @@ const nextConfig = {
     // Avoid issues with native Node modules
     serverComponentsExternalPackages: ['bcrypt', 'node-gyp-build']
   },
-  // Ensure environment variables are properly loaded
-  env: {
-    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
-    BLOB_STORE_ID: process.env.BLOB_STORE_ID,
-    NEXT_CONFIG_BLOB_TOKEN: 'loaded', // Indicator that we've loaded the token in next.config
-  },
+  // Server code reads BLOB_READ_WRITE_TOKEN from process.env at runtime. Don't
+  // add it to an `env` block: that inlines the secret into the build output.
   webpack: (config) => {
     // Resolve issues with native modules like bcrypt
     config.resolve.fallback = {
@@ -96,8 +92,13 @@ const nextConfig = {
     return [
       {
         source: '/:path*',
+        headers: securityHeaders,
+      },
+      {
+        // Shared caching only for the public site. Admin pages and API
+        // responses can depend on the session, so a CDN must never store them.
+        source: '/((?!admin|api|_next).*)',
         headers: [
-          ...securityHeaders,
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',

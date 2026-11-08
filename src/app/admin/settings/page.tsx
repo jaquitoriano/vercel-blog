@@ -1,26 +1,15 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import SettingsForm from '@/components/admin/SettingsForm';
 import { settingsRepository } from '@/lib/repositories/settings.repository';
 import { logBlobConfigStatus } from '@/lib/blob/check-blob-config';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Site Settings - Admin Dashboard',
 };
 
 export default async function SettingsPage() {
-  const session = await auth();
-  
-  // Redirect if not authenticated or not an admin
-  if (!session || !session.user) {
-    redirect('/admin/login');
-  }
-  
-  const userRole = session.user.role?.toUpperCase();
-  if (userRole !== 'ADMIN') {
-    redirect('/admin/login');
-  }
+  await requireAdminPage();
   
   // Check blob configuration on the server side
   logBlobConfigStatus();

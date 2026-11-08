@@ -1,9 +1,8 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import PostForm from '@/components/admin/PostForm';
 import { postRepository } from '@/lib/repositories/post.repository';
 import { prisma } from '@/lib/db/prisma';
 import { Metadata } from 'next';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Create Post - Admin Dashboard',
@@ -24,17 +23,7 @@ async function getOptions() {
 }
 
 export default async function CreatePostPage() {
-  const session = await auth();
-  
-  // Redirect if not authenticated or not an admin
-  if (!session || !session.user) {
-    redirect('/admin/login');
-  }
-  
-  const userRole = session.user.role?.toUpperCase();
-  if (userRole !== 'ADMIN') {
-    redirect('/admin/login');
-  }
+  await requireAdminPage();
   
   const { authors, categories, tags } = await getOptions();
   

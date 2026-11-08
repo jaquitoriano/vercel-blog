@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import UserForm from '@/components/admin/users/UserForm';
 import { notFound } from 'next/navigation';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata = {
   title: 'Edit User - Admin Dashboard',
@@ -33,6 +34,7 @@ async function getUser(id: string) {
 }
 
 export default async function EditUserPage({ params }: EditUserPageProps) {
+  await requireAdminPage();
   const user = await getUser(params.id);
   
   if (!user) {

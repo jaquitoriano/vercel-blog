@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
 import { formatDate } from '@/lib/utils';
 import { categoryRepository } from '@/lib/repositories/category.repository';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export default async function CategoryDetail({ params }: { params: { id: string } }) {
+  await requireAdminPage();
   const categoryId = params.id;
   const category = await categoryRepository.findById(categoryId);
   

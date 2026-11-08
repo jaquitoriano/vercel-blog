@@ -64,7 +64,9 @@ export async function POST(req: NextRequest) {
       success: true, 
       url: result.url,
       type: result.type,
-      pathname: `${folder}/${uniqueFilename}`,
+      // uploadToBlob adds its own timestamp and sanitises the path, so report
+      // the path it actually wrote
+      pathname: result.pathname ?? `${folder}/${uniqueFilename}`,
       uploadedAt: new Date().toISOString(),
       size: fileSize || 0,
       message: 'File uploaded successfully'

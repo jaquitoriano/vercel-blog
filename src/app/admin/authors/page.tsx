@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db/prisma';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 async function getAuthorsWithPostCount() {
   // Get all authors
@@ -28,6 +29,7 @@ async function getAuthorsWithPostCount() {
 }
 
 export default async function AdminAuthors() {
+  await requireAdminPage();
   const authorsWithCounts = await getAuthorsWithPostCount();
 
   return (

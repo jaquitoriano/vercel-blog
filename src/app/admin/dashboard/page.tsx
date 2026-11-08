@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import AdminDashboardContent from '@/components/admin/DashboardContent';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 async function getStats() {
   try {
@@ -51,6 +52,7 @@ async function getStats() {
 }
 
 export default async function AdminDashboard() {
+  await requireAdminPage();
   const stats = await getStats();
   
   return <AdminDashboardContent stats={stats} />;

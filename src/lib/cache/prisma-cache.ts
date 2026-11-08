@@ -1,42 +1,49 @@
 import { createClient } from 'redis';
 
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
+// Without REDIS_URL the client would default to localhost and keep retrying,
+// so only create one when a URL is configured
+const redis = process.env.REDIS_URL
+  ? createClient({ url: process.env.REDIS_URL })
+  : null;
 
-// Connect to redis on startup
-redis.connect().catch(console.error);
+if (redis) {
+  // Handle redis errors
+  redis.on('error', (err) => console.error('Redis Client Error', err));
 
-// Handle redis errors
-redis.on('error', (err) => console.error('Redis Client Error', err));
+  // Connect to redis on startup
+  redis.connect().catch(console.error);
+}
 
 export async function cachePrismaQuery<T>(
   key: string,
   queryFn: () => Promise<T>,
   ttl: number = 300 // 5 minutes default
 ): Promise<T> {
-  try {
-    console.log('🔍 Checking cache for key:', key);
-    // Try to get cached data
-    const cached = await redis.get(key);
-    if (cached) {
-      console.log('✅ Cache HIT');
-      return JSON.parse(cached) as T;
-    }
-    
-    console.log('❌ Cache MISS - Fetching from database');
-    // If no cache, execute the query
-    const result = await queryFn();
-    
-    // Cache the result
-    await redis.set(key, JSON.stringify(result), {
-      EX: ttl
-    });
-
-    return result;
-  } catch (error) {
-    console.error('Cache error:', error);
-    // If cache fails, fall back to direct query
+  // While Redis is missing, connecting or down, query the database directly.
+  // Sending commands then would queue them until Redis came back.
+  if (!redis?.isReady) {
     return queryFn();
   }
+
+  let cached: string | null = null;
+  try {
+    cached = await redis.get(key);
+  } catch (error) {
+    console.error('Cache read error:', error);
+  }
+  if (cached) {
+    return JSON.parse(cached) as T;
+  }
+
+  // Outside the try blocks, so a database error is raised once rather than
+  // triggering a second query
+  const result = await queryFn();
+
+  try {
+    await redis.set(key, JSON.stringify(result), { EX: ttl });
+  } catch (error) {
+    console.error('Cache write error:', error);
+  }
+
+  return result;
 }

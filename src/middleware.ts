@@ -7,26 +7,11 @@ export async function middleware(request: NextRequest) {
   const isAdminApiPath = request.nextUrl.pathname.startsWith("/api/admin");
   const isLoginPath = request.nextUrl.pathname === "/admin/login";
   const isLogoutPath = request.nextUrl.pathname === "/admin/logout";
-  const isPostPath = request.nextUrl.pathname.startsWith("/posts/");
   
   // The auth cookie holds a signed session token, so verify it rather than
   // trusting that the cookie exists
   const authCookie = request.cookies.get(SESSION_COOKIE_NAME);
   const isLoggedIn = !!(await verifySessionToken(authCookie?.value));
-  
-  // Debug logging for auth state
-  console.log('Middleware auth check:', {
-    path: request.nextUrl.pathname,
-    isAdminPath,
-    isLoginPath,
-    hasAuthCookie: !!authCookie,
-    cookieName: authCookie?.name,
-    isLoggedIn,
-    allCookies: request.cookies.getAll().map(c => c.name),
-    host: request.headers.get('host'),
-    origin: request.headers.get('origin'),
-    referer: request.headers.get('referer')
-  });
   
   // Add security headers
   const response = NextResponse.next();
@@ -36,14 +21,6 @@ export async function middleware(request: NextRequest) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
-  // Add security headers for post pages
-  if (isPostPath) {
-    response.headers.set(
-      'X-Robots-Tag',
-      'index, follow'
-    );
-  }
-  
   // Login page is accessible to everyone, but redirects if already logged in
   if (isLoginPath) {
     if (isLoggedIn) {
@@ -74,8 +51,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/admin/:path*", 
+    "/admin/:path*",
     "/api/admin/:path*",
-    "/posts/:path*"
   ],
 };

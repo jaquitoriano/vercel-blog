@@ -18,8 +18,6 @@ export async function GET(req: NextRequest) {
     const tokenInfo = {
       exists: !!blobToken,
       length: blobToken.length,
-      firstChars: blobToken ? blobToken.substring(0, 15) + '...' : 'N/A',
-      isInNextConfig: !!process.env.NEXT_CONFIG_BLOB_TOKEN,
       envSource: getEnvSource(),
     };
     

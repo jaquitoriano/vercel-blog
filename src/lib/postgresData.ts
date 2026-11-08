@@ -3,6 +3,7 @@
  * It maintains the same API as the original data module
  */
 import { PostWithRelations, Post, Comment, Author, Category, Tag } from '@/types';
+import type { Comment as DbComment } from '@prisma/client';
 import * as pg from './fetchPostgresData';
 
 /**
@@ -21,12 +22,14 @@ export async function getPostWithRelations(postId: string): Promise<PostWithRela
 /**
  * Get a post with all its relations by slug
  */
-export async function getPostBySlugWithRelations(slug: string): Promise<PostWithRelations | null> {
+export async function getPostBySlugWithRelations(
+  slug: string
+): Promise<(PostWithRelations & { comments: DbComment[] }) | null> {
   const post = await pg.getPostBySlug(slug);
   
   if (!post) return null;
   
-  return post as unknown as PostWithRelations;
+  return post as unknown as PostWithRelations & { comments: DbComment[] };
 }
 
 /**
@@ -58,49 +61,14 @@ export async function getRecentPostsWithRelations(limit: number = 5): Promise<Po
 }
 
 /**
- * Get related posts based on tags
+ * Get related posts based on tags, most shared tags first
  */
 export async function getRelatedPosts(
   currentPostId: string,
   limit: number = 3
 ): Promise<PostWithRelations[]> {
-  const allPosts = await pg.getAllPosts();
-  const currentPost = allPosts.find(post => post.id === currentPostId);
-
-  if (!currentPost || !currentPost.tags || currentPost.tags.length === 0) return [];
-
-  // Filter out null/undefined tags, then assert the type when mapping
-  const currentPostTagIds = currentPost.tags
-    .filter(tag => tag != null)              // removes null/undefined at runtime
-    .map(tag => (tag as Tag).id);            // assert safe for the compiler
-
-  const relatedPosts = allPosts
-    .filter(post => {
-      if (post.id === currentPostId) return false;
-      if (!post.tags || post.tags.length === 0) return false;
-
-      const postTagIds = post.tags
-        .filter(tag => tag != null)
-        .map(tag => (tag as Tag).id);
-
-      return postTagIds.some(tagId => currentPostTagIds.includes(tagId));
-    })
-    .sort((a, b) => {
-      if (!a.tags || !b.tags) return 0;
-
-      const aMatches = a.tags
-        .filter(tag => tag != null && currentPostTagIds.includes((tag as Tag).id))
-        .length;
-
-      const bMatches = b.tags
-        .filter(tag => tag != null && currentPostTagIds.includes((tag as Tag).id))
-        .length;
-
-      return bMatches - aMatches;
-    })
-    .slice(0, limit);
-
-  return relatedPosts as unknown as PostWithRelations[];
+  const posts = await pg.getRelatedPosts(currentPostId, limit);
+  return posts as unknown as PostWithRelations[];
 }
 
 /**
@@ -133,22 +101,6 @@ export async function getPostsByTag(tagSlug: string): Promise<PostWithRelations[
 export async function getPostsByAuthor(authorId: string): Promise<PostWithRelations[]> {
   const posts = await pg.getPostsByAuthor(authorId);
   return posts as unknown as PostWithRelations[];
-}
-
-/**
- * Get post with comments
- */
-export async function getPostWithComments(postId: string): Promise<(PostWithRelations & { comments: Comment[] }) | null> {
-  const allPosts = await pg.getAllPosts();
-  const post = allPosts.find(p => p.id === postId);
-  
-  if (!post) return null;
-  
-  const fullPost = await pg.getPostBySlug(post.slug);
-  
-  if (!fullPost) return null;
-  
-  return fullPost as unknown as (PostWithRelations & { comments: Comment[] });
 }
 
 /**

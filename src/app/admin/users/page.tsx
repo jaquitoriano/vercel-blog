@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import UsersList from '@/components/admin/users/UsersList';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata = {
   title: 'Manage Users - Admin Dashboard',
@@ -27,6 +28,7 @@ async function getUsers() {
 }
 
 export default async function UsersPage() {
+  await requireAdminPage();
   const users = await getUsers();
   
   return (

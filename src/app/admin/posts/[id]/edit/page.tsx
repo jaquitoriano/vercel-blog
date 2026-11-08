@@ -1,10 +1,9 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import PostForm from '@/components/admin/PostForm';
 import { postRepository } from '@/lib/repositories/post.repository';
 import { prisma } from '@/lib/db/prisma';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Edit Post - Admin Dashboard',
@@ -31,17 +30,7 @@ async function getOptions() {
 }
 
 export default async function EditPostPage({ params }: EditPostPageProps) {
-  const session = await auth();
-  
-  // Redirect if not authenticated or not an admin
-  if (!session || !session.user) {
-    redirect('/admin/login');
-  }
-  
-  const userRole = session.user.role?.toUpperCase();
-  if (userRole !== 'ADMIN') {
-    redirect('/admin/login');
-  }
+  await requireAdminPage();
   
   // Get the post
   const post = await postRepository.findById(params.id);

@@ -1,5 +1,3 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import { postRepository } from '@/lib/repositories/post.repository';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -7,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import DeletePostButton from '@/components/admin/DeletePostButton';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Post Details - Admin Dashboard',
@@ -19,17 +18,7 @@ interface ViewPostPageProps {
 }
 
 export default async function ViewPostPage({ params }: ViewPostPageProps) {
-  const session = await auth();
-  
-  // Redirect if not authenticated or not an admin
-  if (!session || !session.user) {
-    redirect('/admin/login');
-  }
-  
-  const userRole = session.user.role?.toUpperCase();
-  if (userRole !== 'ADMIN') {
-    redirect('/admin/login');
-  }
+  await requireAdminPage();
   
   // Get the post
   const post = await postRepository.findById(params.id);

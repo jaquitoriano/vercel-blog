@@ -1,24 +1,13 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import MediaGalleryClient from './media-gallery-client';
+import { requireAdminPage } from '@/lib/auth/requireAdminPage';
 
 export const metadata: Metadata = {
   title: 'Media Gallery - Admin Dashboard'
 };
 
 export default async function MediaGalleryPage() {
-  const session = await auth();
-  
-  // Redirect if not authenticated or not an admin
-  if (!session || !session.user) {
-    redirect('/admin/login');
-  }
-  
-  const userRole = session.user.role?.toUpperCase();
-  if (userRole !== 'ADMIN') {
-    redirect('/admin/login');
-  }
+  await requireAdminPage();
   
   return (
     <div>

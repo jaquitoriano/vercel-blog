@@ -64,6 +64,11 @@ model Post {
   tags       PostTag[]
   comments   Comment[]
 
+  // Public lists filter on status and sort by date; foreign keys aren't
+  // indexed automatically in Postgres
+  @@index([status, date])
+  @@index([authorId])
+  @@index([categoryId])
   @@map("posts")
 }
 
@@ -75,6 +80,8 @@ model PostTag {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@id([postId, tagId])
+  // The primary key covers lookups by postId but not by tagId
+  @@index([tagId])
   @@map("post_tags")
 }
 
@@ -88,6 +95,7 @@ model Comment {
   postId      String   @map("post_id")
   post        Post     @relation(fields: [postId], references: [id])
 
+  @@index([postId])
   @@map("comments")
 }
 

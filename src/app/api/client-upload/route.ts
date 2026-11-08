@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireAdmin } from '@/lib/auth/requireAdmin';
 import { uploadToBlob } from '@/lib/blob/blob-client';
+import { logBlobConfigStatus } from '@/lib/blob/check-blob-config';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
-    
-    // Check if user is authenticated
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Uploads write to the public Blob store, so only admins may use them,
+    // as with the /api/admin upload routes
+    const unauthorized = await requireAdmin();
+    if (unauthorized) return unauthorized;
+
+    // Without a token uploadToBlob returns a placeholder URL, which must not
+    // be reported as a successful upload
+    if (!logBlobConfigStatus()) {
+      return NextResponse.json(
+        { error: 'Vercel Blob is not properly configured. Check server logs for details.' },
+        { status: 500 }
+      );
     }
     
     const formData = await req.formData();
@@ -23,11 +31,11 @@ export async function POST(req: NextRequest) {
     }
     
     // Upload the file to Vercel Blob using the server-side token
-    const url = await uploadToBlob(file, file.name, folder);
+    const result = await uploadToBlob(file, file.name, folder);
     
     return NextResponse.json({ 
       success: true, 
-      url,
+      url: result.url,
       message: 'File uploaded successfully'
     });
   } catch (error: any) {
